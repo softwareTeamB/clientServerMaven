@@ -22,9 +22,3 @@
 hs_err_pid*
 /config/
 *.properties
-
-*.xml
-
-*.properties
-
-*.xml
