@@ -1,5 +1,6 @@
 package clientserver;
 
+import global.ConsoleColor;
 import global.FileSystem;
 import http.Http;
 import java.io.File;
@@ -36,6 +37,8 @@ public class ClientServer {
     public static void main(String[] args) {
         
         Installer installer = new Installer();
+        ConsoleColor.out("test");
+        ConsoleColor.error("test");
 
         /*DataGetter dataGetter = new DataGetter();
         try {

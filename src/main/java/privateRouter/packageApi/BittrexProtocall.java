@@ -19,7 +19,6 @@ import security.EncryptionUtility;
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
 import global.FileSystem;
-import JSON.JSONObject;
 import global.LoadPropFile;
 
 public class BittrexProtocall {
@@ -29,7 +28,6 @@ public class BittrexProtocall {
     private final String API_VERSION = "1.1", INITIAL_URL = "https://bittrex.com/api/";
     private final String PUBLIC = "public", MARKET = "market", ACCOUNT = "account";
     private final String encryptionAlgorithm = "HmacSHA512";
-    private JSONObject bittrexConfig;
     private String API_KEY;
     private String API_SECRET;
     

@@ -10,6 +10,7 @@ package global;
  * @author michel
  */
 public class ConsoleColor {
+
     // Reset
     private static final String RESET = "\033[0m";  // Text Reset
 
@@ -82,15 +83,14 @@ public class ConsoleColor {
     private static final String PURPLE_BACKGROUND_BRIGHT = "\033[0;105m"; // PURPLE
     private static final String CYAN_BACKGROUND_BRIGHT = "\033[0;106m";  // CYAN
     private static final String WHITE_BACKGROUND_BRIGHT = "\033[0;107m";   // WHITE
-    
-    
-    
-    public static void systemOut(String bericht){
-        
-        System.out.println(RED + bericht +RESET);
+
+    public static void out(String bericht) {
+
+        System.out.println(BLACK +"[INFO] " + bericht + RESET);
     }
-    
-    
-    
+
+    public static void error(String bericht) {
+        System.out.println(RED +"[ERROR] "+ bericht + RESET);
+    }
 
 }
