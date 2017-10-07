@@ -1,11 +1,7 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package global;
 
 /**
+ * Console color klasse
  *
  * @author michel
  */
@@ -84,13 +80,41 @@ public class ConsoleColor {
     private static final String CYAN_BACKGROUND_BRIGHT = "\033[0;106m";  // CYAN
     private static final String WHITE_BACKGROUND_BRIGHT = "\033[0;107m";   // WHITE
 
+    /**
+     * Methoden om out bericht uit te printen
+     *
+     * @param bericht out bericht
+     */
     public static void out(String bericht) {
 
-        System.out.println(BLACK +"[INFO] " + bericht + RESET);
+        System.out.println(BLUE +"["+Datum.datum()+  "] [INFO] " + RESET + bericht);
     }
 
+    /**
+     * Methoden om error bericht uit te printen
+     *
+     * @param bericht out bericht
+     */
     public static void error(String bericht) {
-        System.out.println(RED +"[ERROR] "+ bericht + RESET);
+        System.out.println(RED +"["+Datum.datum()+  "] [ERROR] " + RESET + bericht);
+    }
+
+    /**
+     * Methoden om error bericht uit te printen
+     *
+     * @param bericht out bericht
+     */
+    public static void err(String bericht) {
+        System.out.println(RED +"["+Datum.datum()+  "] [ERROR] " + RESET + bericht);
+    }
+
+    /**
+     * Methoden om warn bericht uit te printen
+     *
+     * @param bericht out bericht
+     */
+    public static void warn(String bericht) {
+        System.out.println(YELLOW +"["+Datum.datum()+  "] [WARN] " + RESET + bericht);
     }
 
 }
