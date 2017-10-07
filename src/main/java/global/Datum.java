@@ -20,8 +20,8 @@ public class Datum {
      * Methoden die de datum en tijd return
      * @return datum en tijd
      */
-    public String datum() {
-        DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+    public static String datum() {
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         return dateFormat.format(date);
     }
