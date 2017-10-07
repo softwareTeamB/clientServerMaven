@@ -18,6 +18,7 @@ import security.EncryptionUtility;
 
 import com.google.gson.*;
 import com.google.gson.reflect.TypeToken;
+import global.ConsoleColor;
 import global.FileSystem;
 import global.LoadPropFile;
 
@@ -30,6 +31,7 @@ public class BittrexProtocall {
     private final String encryptionAlgorithm = "HmacSHA512";
     private String API_KEY;
     private String API_SECRET;
+    private ConsoleColor consoleColor;
     
     //maak object
     FileSystem filesystem = new FileSystem();
@@ -45,7 +47,7 @@ public class BittrexProtocall {
             this.API_KEY = config.getProperty("bittrexApiKey");
             this.API_SECRET = config.getProperty("bittrexApiSecretKey");
         } catch (IOException ex) {
-            System.err.println("Er is een error in de contructor van bittrexProtocall. Dit is de error: "+ex
+            consoleColor.error("Er is een error in de contructor van bittrexProtocall. Dit is de error: "+ex
                     + "\nDit software wordt opgesloten.");
             
             //Sluit het systeem af
@@ -177,7 +179,7 @@ public class BittrexProtocall {
     }
 
     public String getDepositAddres(String currency) { // Returns the deposit address for a specific currency - if one is not found, it will be generated
-
+        
         return getJson(API_VERSION, ACCOUNT, "getdepositaddress", returnCorrectMap("currency", currency));
     }
 
