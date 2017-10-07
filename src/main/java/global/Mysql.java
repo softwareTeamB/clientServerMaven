@@ -8,9 +8,9 @@ package global;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
+import java.sql.SQLDataException;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.concurrent.locks.StampedLock;
 
 /**
  *
@@ -27,6 +27,22 @@ public class Mysql {
     private final boolean AUTORECONNECT = true;
     private final boolean SSL = false;
     private final String CONN_STRING = "jdbc:mysql://" + IPADDRESS + ":" + POORT + "/" + DATABASENAAM + "?autoReconnect=" + AUTORECONNECT + "&useSSL=" + SSL;
+    private Statement stmt;
+
+    /**
+     * Constructor
+     */
+    public Mysql() {
+        try {
+            Connection conn;
+            conn = DriverManager.getConnection(CONN_STRING, USERNAME, PASSWORD);
+            this.stmt = (Statement) conn.createStatement();
+        } catch (SQLException ex) {
+            ConsoleColor.err("Er is een error opgetreden met het aanmaken van connenctie in mysql."
+                    + " De applicatie wordt veilig afgesloten.");
+            System.exit(0);
+        }
+    }
 
     /**
      * Select stament
@@ -36,10 +52,6 @@ public class Mysql {
      * @throws SQLException als er iets fout gaat
      */
     public ResultSet mysqlSelect(String sqlString) throws SQLException {
-
-        Connection conn;
-        conn = DriverManager.getConnection(CONN_STRING, USERNAME, PASSWORD);
-        Statement stmt = (Statement) conn.createStatement();
 
         //return
         return stmt.executeQuery(sqlString);
@@ -53,20 +65,11 @@ public class Mysql {
      */
     public void mysqlExecute(String sqlString) throws SQLException {
 
-        Connection conn;
-        conn = DriverManager.getConnection(CONN_STRING, USERNAME, PASSWORD);
-        Statement stmt = (Statement) conn.createStatement();
-
         //run stament
         stmt.execute(sqlString);
     }
 
     public int mysqlCount(String sqlString) throws SQLException, Exception {
-
-        //maak contact
-        Connection conn;
-        conn = DriverManager.getConnection(CONN_STRING, USERNAME, PASSWORD);
-        Statement stmt = (Statement) conn.createStatement();
 
         //return
         ResultSet rs = stmt.executeQuery(sqlString);
@@ -88,10 +91,45 @@ public class Mysql {
      */
     public int mysqlExchangeNummer(String sqlString) throws SQLException, Exception {
 
-        //maak contact
-        Connection conn;
-        conn = DriverManager.getConnection(CONN_STRING, USERNAME, PASSWORD);
-        Statement stmt = (Statement) conn.createStatement();
+        //return
+        ResultSet rs = stmt.executeQuery(sqlString);
+        while (rs.next()) {
+            return rs.getInt("nummer");
+        }
+
+        //als er een error optreed
+        throw new Exception("Mysql kan geen nummer return geven");
+    }
+
+    /**
+     * Methoden die de exchange nummer geeft
+     *
+     * @param exchange exchange naam
+     * @return return 1 nummer
+     * @throws SQLException sql error
+     * @throws Exception andere exceptions
+     */
+    public int mysqlExchangeNummerV2(String exchange) throws SQLException, Exception {
+
+        //return
+        ResultSet rs = stmt.executeQuery("select getExchangeNummer('bittrex') AS nummer;");
+        while (rs.next()) {
+            return rs.getInt("nummer");
+        }
+
+        //als er een error optreed
+        throw new Exception("Mysql kan geen nummer return geven");
+    }
+
+    /**
+     * Return nummer wat er is
+     *
+     * @param sqlString nummer
+     * @return return 1 nummer
+     * @throws SQLException sql error
+     * @throws Exception andere exceptions
+     */
+    public int mysqlNummer(String sqlString) throws SQLException, Exception {
 
         //return
         ResultSet rs = stmt.executeQuery(sqlString);
@@ -104,27 +142,19 @@ public class Mysql {
     }
 
     /**
-     * Group counter is een methoden die het result van group by telt
-     * @param sqlString sql string met group by 
-     * @return de index waarde
-     * @throws SQLException sql error exceptie
+     * Return het nummer van de marktID
+     *
+     * @param sqlString sql string het count object met nummer heten
+     * @return het nummer
+     * @throws SQLException als de database response leeg is
      */
-    public int mysqlGroupCounter(String sqlString) throws SQLException {
+    public int mysqlIdMarktNaam(String sqlString) throws SQLException {
 
-        //index geld als counter in dit geval want iedere loop wordt met 1 verhoogt
-        int index= 0;
-        
-        //vraag de data op
-        ResultSet rs = mysqlSelect(sqlString);
-
-        //loop er door heen
+        //return
+        ResultSet rs = stmt.executeQuery(sqlString);
         while (rs.next()) {
-            
-            //tel het er bij op
-            index++;
+            return rs.getInt("nummer");
         }
-        
-        //return de index waarde
-        return index;
+        throw new SQLDataException("De database reponse is leeg");
     }
 }
