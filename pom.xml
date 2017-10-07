@@ -27,5 +27,14 @@
             <artifactId>gson</artifactId>
             <version>2.4</version>
         </dependency>
+        
+        <!-- folder voor gdax wrapper-->
+        <dependency>
+            <groupId>sample</groupId>
+            <artifactId>com.sample</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/src/jar/gdax-wrapper.jar</systemPath>
+        </dependency>
     </dependencies>
 </project>
