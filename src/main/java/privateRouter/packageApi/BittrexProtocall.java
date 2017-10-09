@@ -53,8 +53,6 @@ public class BittrexProtocall {
             //Sluit het systeem af
             System.exit(0);
         }
-        
-        
     }
 
     public String getMarkets() { // Returns all markets with their metadata
