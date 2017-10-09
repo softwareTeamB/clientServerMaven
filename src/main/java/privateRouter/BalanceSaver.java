@@ -52,6 +52,9 @@ public class BalanceSaver {
         balanceBittrex();
     }
 
+    /**
+     * Methoden die de bittrex balance opslaat
+     */
     public void balanceBittrex() {
 
         //vraag alle balance data op
