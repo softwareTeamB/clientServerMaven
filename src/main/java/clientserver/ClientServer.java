@@ -12,13 +12,14 @@ import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import marktData.MainSaveConstroller;
+import privateRouter.BalanceSaver;
 import privateRouter.DataGetter;
 import privateRouter.packageApi.BittrexProtocall;
+import privateRouter.packageApi.PoloniexProtocall;
 import updater.DatabaseUpdater;
 
 /**
- * Dit is het programma wat er voor zorgt dat de client kant up to data kan
- * blijven
+ * Dit is het programma wat er voor zorgt dat de client kant up to data kan blijven
  *
  * @author michel
  */
@@ -30,26 +31,26 @@ public class ClientServer {
     static Http http = new Http();
     static DatabaseUpdater dataBaseUpdater = new DatabaseUpdater();
     static FileSystem f = new FileSystem();
+    static BalanceSaver balanceSaver = new BalanceSaver();
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
-        Installer installer = new Installer();
-        ConsoleColor.out("test");
-        ConsoleColor.error("test");
 
-        /*DataGetter dataGetter = new DataGetter();
+        DataGetter dataGetter = new DataGetter();
         try {
             dataGetter.getBalance("btc", "ltc", "bittrex");
         } catch (SQLException ex) {
-            Logger.getLogger(ClientServer.class.getName()).log(Level.SEVERE, null, ex);
-        }*/
+            ConsoleColor.err(""+ex);
+        } catch (Exception ex) {
+            ConsoleColor.err(""+ex);
+        }
+
         BittrexProtocall bp = new BittrexProtocall();
-        System.out.println("/30"+bp.getBalances());
-        
-        
+        ConsoleColor.out(bp.getBalances());
+        balanceSaver.balance();
+
         //kijk of config folder bestaat
         String bestandLocatie = "config/";
         Path path = Paths.get(bestandLocatie);
@@ -58,13 +59,13 @@ public class ClientServer {
             //maak de folder aan
             try {
                 Files.createDirectories(Paths.get(bestandLocatie));
-                
+
             } catch (IOException ex) {
                 System.err.println("Er is een error op getreden met het aanmaken van de map. " + ex);
                 System.exit(0);
             }
         }
-        
+
         //laat mainSaveController
         try {
             MainSaveConstroller mainSaveConstroller = new MainSaveConstroller();
@@ -72,14 +73,11 @@ public class ClientServer {
             System.err.println(ex);
             System.exit(0);
         }
-        
+
         new Installer();
-        
-        
-        
+
         //run de versieCheck
         //versieCheck();
-
         //kijk of er nieuwe markt of exchange in de lijst moet staan
         //doe dit om de versie check de vergelijken met jou eigen versie die in het systeem is opgelagen
     }
@@ -99,15 +97,15 @@ public class ClientServer {
 
             //run database updater
             dataBaseUpdater.databaseUpdater();
-            
+
             //run de methoden op de nieuwe versie check op te slaan
             versieCheckUpdate();
-            
+
         } else {
-            
+
             //vraag aan de server op welke versie er bij de server staat
             String versieServer = http.GetHttp(url + versieCheck);
-            
+
             //vraag de versieCheck op van de server
             //lees de bestand inhoud
             try {
@@ -131,7 +129,6 @@ public class ClientServer {
      * Deze methoden slaat de nieuwe versieCheck op
      */
     private static void versieCheckUpdate() {
-
 
     }
 }
