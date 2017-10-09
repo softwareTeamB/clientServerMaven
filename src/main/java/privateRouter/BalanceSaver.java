@@ -88,10 +88,8 @@ public class BalanceSaver {
                 balanceChecker(ID_BITTREX, cointag, balance, pending, available);
             } catch (Exception ex) {
                 ConsoleColor.err(""+ex);
-            }
-            
+            }   
         }
-
     }
 
     /**
@@ -178,5 +176,7 @@ public class BalanceSaver {
                 + "VALUES(" + exchangeID + ", '" + cointag + "', " + balance + ", " + available + ", " + pending + ")";
 
         mysql.mysqlExecute(sqlInsert);
+        
+        ConsoleColor.out("De balance is toegevoegd van cointag: "+ cointag);
     }
 }
