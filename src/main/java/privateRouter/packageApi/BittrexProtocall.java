@@ -322,7 +322,7 @@ public class BittrexProtocall {
         return urlAttachment;
     }
 
-    public static HashMap<String, String> getMapFromResponse(String response) {
+    /*public static HashMap<String, String> getMapFromResponse(String response) {
 
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
@@ -330,7 +330,7 @@ public class BittrexProtocall {
         }.getType()); // Sorry.
 
         return map;
-    }
+    }*/
 
     private String getResponseBody(String url) {
 

@@ -27,14 +27,31 @@
             <artifactId>gson</artifactId>
             <version>2.4</version>
         </dependency>
-        
-        <!-- folder voor gdax wrapper-->
         <dependency>
+            <groupId>com.sun.mail</groupId>
+            <artifactId>javax.mail</artifactId>
+            <version>1.5.6</version>
+        </dependency>
+         
+        <!-- folder voor gdax wrapper-->
+        <!--<dependency>
             <groupId>sample</groupId>
             <artifactId>com.sample</artifactId>
             <version>1.0</version>
             <scope>system</scope>
-            <systemPath>${project.basedir}/src/jar/gdax-wrapper.jar</systemPath>
-        </dependency>
+            <systemPath>${pom.basedir}/src/jar/gdax-wrapper.jar</systemPath>
+        </dependency>-->
+        
+        
+        <!-- java mailer
+        <dependency>
+            <groupId>javamailer</groupId>
+            <artifactId>mail</artifactId>
+            <version>1.0</version>
+            <scope>system</scope>
+            <systemPath>${pom.basedir}/src/jar/javax.mail.jar</systemPath>
+            <type>jar</type>
+            <optional>true</optional>
+        </dependency>-->
     </dependencies>
 </project>

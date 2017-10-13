@@ -20,7 +20,7 @@ public class LoadPropFile {
      * @return de properties info
      * @throws IOException file exception
      */
-    public Properties loadPropFile(String fileName) throws IOException {
+    public static Properties loadPropFile(String fileName) throws IOException {
         Properties prop = new Properties();
         InputStream input;
 
