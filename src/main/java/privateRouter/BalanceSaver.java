@@ -47,7 +47,7 @@ public class BalanceSaver {
      * Methoden die de balance opvraagd
      */
     public void balance() {
-        
+
         //roep de methodens op
         balanceBittrex();
     }
@@ -68,27 +68,27 @@ public class BalanceSaver {
             //zorg er voor dat het porgramma niet meer verder gaat
             return;
         };
-        
+
         //maak een JSONArray
         JSONArray array = bittrexReponseObject.getJSONArray("result");
-        
+
         //for loop
         for (int i = 0; i < array.length(); i++) {
-            
+
             //maak er een object van
             JSONObject object = array.getJSONObject(i);
-            
+
             String cointag = object.getString("Currency");
             double balance = object.getDouble("Balance");
             double available = object.getDouble("Available");
             double pending = object.getDouble("Pending");
-            
+
             try {
                 //roep de methoden op die er voor zorgt dat alles goed verwerkt wordt
                 balanceChecker(ID_BITTREX, cointag, balance, pending, available);
             } catch (Exception ex) {
-                ConsoleColor.err(""+ex);
-            }   
+                ConsoleColor.err("" + ex);
+            }
         }
     }
 
@@ -114,13 +114,7 @@ public class BalanceSaver {
         //kijk het het zelfde is
         if (count == 0) {
 
-            //terminal bericht
-            ConsoleColor.out("De balance moet toegevoegd worden van de coin: " + cointag);
-
-            //roep de insert methoden op
-            insertBalance(exchangeID, cointag, balance, pending, available);
-        } else {
-
+            //kijk of de pm keys er in staan
             String sqlStament2 = "SELECT COUNT(*) AS total FROM balance "
                     + "WHERE idExchangeLijst=" + exchangeID
                     + " AND cointag='" + cointag + "'";
@@ -129,9 +123,16 @@ public class BalanceSaver {
             //kijk of de balance geupdate moet worden
             if (count2 == 0) {
 
+                //terminal bericht
+                ConsoleColor.out("De balance moet toegevoegd worden van de coin: " + cointag);
+
+                //roep de insert methoden op
+                insertBalance(exchangeID, cointag, balance, pending, available);
+            } else if (count == 1) {
+
                 //termianl bericht
-                ConsoleColor.out("Balance data moet geupdate worden van coin: "+cointag+".");
-                
+                ConsoleColor.out("Balance data moet geupdate worden van coin: " + cointag + ".");
+
                 //roep de methoden op om de balance data te updaten
                 balanceUpdater(exchangeID, cointag, balance, pending, available);
             }
@@ -152,10 +153,10 @@ public class BalanceSaver {
     private void balanceUpdater(int exchangeID, String cointag, double balance, double pending, double available) throws SQLException {
 
         //sql updater
-        String sqlUpdater = "UPDATE balance SET "+
-                "balance="+balance+", pending="+pending+", available="+available
-                +" WHERE idExchangeLijst"+exchangeID+" AND cointag='"+cointag+"'";
-        
+        String sqlUpdater = "UPDATE balance SET "
+                + "balance=" + balance + ", pending=" + pending + ", available=" + available
+                + " WHERE idExchangeLijst" + exchangeID + " AND cointag='" + cointag + "'";
+
         mysql.mysqlExecute(sqlUpdater);
     }
 
@@ -176,7 +177,7 @@ public class BalanceSaver {
                 + "VALUES(" + exchangeID + ", '" + cointag + "', " + balance + ", " + available + ", " + pending + ")";
 
         mysql.mysqlExecute(sqlInsert);
-        
-        ConsoleColor.out("De balance is toegevoegd van cointag: "+ cointag);
+
+        ConsoleColor.out("De balance is toegevoegd van cointag: " + cointag);
     }
 }
