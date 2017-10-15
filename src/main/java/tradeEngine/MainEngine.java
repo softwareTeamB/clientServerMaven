@@ -4,7 +4,7 @@ package tradeEngine;
  *
  * @author michel
  */
-public class Main {
+public class MainEngine {
 
     public void main() {
         
