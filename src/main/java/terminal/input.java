@@ -5,7 +5,7 @@ import java.util.Scanner;
 
 /**
  *
- * @author root
+ * @author michel
  */
 public class input {
 
