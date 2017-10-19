@@ -1,7 +1,7 @@
 package privateRouter;
 
 import global.ConsoleColor;
-import global.Mysql;
+import mysql.Mysql;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -22,7 +22,6 @@ public class DataGetter {
      * @param handelsplaats de naam van de exchange
      * @return array met balance data de positief [0] is de main coin [1] is de markt coin
      * @throws java.sql.SQLException als er een sql error op treed
-     * @throws java.Exception als er een algemen error optreed
      */
     public double[][] getBalance(String mainCoinString, String marktCoinString, String handelsplaats) throws SQLException, Exception {
 

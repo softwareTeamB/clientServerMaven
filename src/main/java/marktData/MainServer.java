@@ -1,7 +1,7 @@
 package marktData;
 
 import global.Array;
-import global.Mysql;
+import mysql.Mysql;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 

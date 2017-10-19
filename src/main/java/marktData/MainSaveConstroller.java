@@ -2,7 +2,7 @@ package marktData;
 
 import JSON.JSONArray;
 import JSON.JSONObject;
-import global.Mysql;
+import mysql.Mysql;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 

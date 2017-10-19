@@ -4,7 +4,7 @@ import JSON.JSONArray;
 import JSON.JSONObject;
 import global.ConsoleColor;
 import global.ErrorMessageResponse;
-import global.Mysql;
+import mysql.Mysql;
 import java.sql.SQLException;
 import privateRouter.packageApi.BittrexProtocall;
 

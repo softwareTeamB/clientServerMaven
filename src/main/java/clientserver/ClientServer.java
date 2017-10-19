@@ -5,17 +5,25 @@ import global.FileSystem;
 import http.Http;
 import java.io.File;
 import java.io.IOException;
+import java.net.ProtocolException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
+import java.util.Date;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import marktData.MainSaveConstroller;
 import privateRouter.BalanceSaver;
 import privateRouter.DataGetter;
+import privateRouter.Deposit;
+import privateRouter.UpdateOrders;
 import privateRouter.packageApi.BittrexProtocall;
-import privateRouter.packageApi.PoloniexProtocall;
+import terminal.input;
 import updater.DatabaseUpdater;
 
 /**
@@ -33,21 +41,55 @@ public class ClientServer {
     static FileSystem f = new FileSystem();
     static BalanceSaver balanceSaver = new BalanceSaver();
 
+    private static TimerTask task1 = new TimerTask() {
+
+        @Override
+        public void run() {
+
+            System.out.println("i");
+        }
+    };
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        
+        InstallerV2 iv2 = new InstallerV2();
+        iv2.main();
+
+        input i = new input();
+        Thread thread = new Thread() {
+            public void run() {
+                i.mainKlasse();
+            }
+        };
+
+        //great timer
+        Timer timer = new Timer();
+
+        //int reloadTime = 1000;
+        //timer schema
+        //timer.schedule(task1, new Date(), reloadTime);
+        thread.start();
+
+        UpdateOrders updateOrrders = new UpdateOrders();
+        updateOrrders.updateOrders();
+
+        BittrexProtocall bp = new BittrexProtocall();
+
+        Deposit deposit = new Deposit();
+        deposit.mainDeposit();
 
         DataGetter dataGetter = new DataGetter();
         try {
             dataGetter.getBalance("btc", "ltc", "bittrex");
         } catch (SQLException ex) {
-            ConsoleColor.err(""+ex);
+            ConsoleColor.err("" + ex);
         } catch (Exception ex) {
-            ConsoleColor.err(""+ex);
+            ConsoleColor.err("" + ex);
         }
 
-        BittrexProtocall bp = new BittrexProtocall();
         ConsoleColor.out(bp.getBalances());
         balanceSaver.balance();
 

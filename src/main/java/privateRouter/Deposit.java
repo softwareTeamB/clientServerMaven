@@ -5,7 +5,7 @@ import JSON.JSONObject;
 import global.ConsoleColor;
 import global.ErrorMessageResponse;
 import global.GetExchangeId;
-import global.Mysql;
+import mysql.Mysql;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import privateRouter.packageApi.BittrexProtocall;

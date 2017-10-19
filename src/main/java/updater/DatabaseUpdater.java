@@ -4,7 +4,7 @@ import JSON.JSONArray;
 import JSON.JSONObject;
 import global.Config;
 import http.Http;
-import global.Mysql;
+import mysql.Mysql;
 import java.sql.SQLException;
 
 /**

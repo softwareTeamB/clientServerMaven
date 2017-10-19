@@ -1,4 +1,4 @@
-package clientserver;
+package mysql;
 
 import global.ConsoleColor;
 import java.sql.Connection;
@@ -36,7 +36,7 @@ public class MysqlConnectionTest {
         try {
 
             ConsoleColor.out("-------- MySQL JDBC Connection Testing ------------");
-            System.out.println("jdbc:mysql://" + ipAddress + ":" + poort + "/" + dbNaam + usernaam + wachtwoord);
+            ConsoleColor.out("jdbc:mysql://" + ipAddress + ":" + poort + "/" + dbNaam + usernaam + wachtwoord);
 
             //connecntie op zetten
             connection = DriverManager
