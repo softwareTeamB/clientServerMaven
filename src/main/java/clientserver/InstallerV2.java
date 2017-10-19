@@ -1,5 +1,6 @@
 package clientserver;
 
+//impart alle klassen
 import mysql.MysqlConnectionTest;
 import global.ConsoleColor;
 import global.LoadPropFile;

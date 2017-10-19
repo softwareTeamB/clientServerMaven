@@ -1,10 +1,5 @@
 package mysql;
 
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 import global.ConsoleColor;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,7 +9,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 /**
- *
+ * Klasse die voor de verbinding met het database zorgt
  * @author michel
  */
 public class Mysql {
@@ -31,7 +26,7 @@ public class Mysql {
     private Statement stmt;
 
     /**
-     * Constructor
+     * Constructor waar het properties bestand wordt opgehaald en de connectie wordt gemaakt
      */
     public Mysql() {
         try {
@@ -39,8 +34,10 @@ public class Mysql {
             conn = DriverManager.getConnection(CONN_STRING, USERNAME, PASSWORD);
             this.stmt = (Statement) conn.createStatement();
         } catch (SQLException ex) {
-            ConsoleColor.err("Er is een error opgetreden met het aanmaken van connenctie in mysql."
-                    + " De applicatie wordt veilig afgesloten.");
+            
+            //console color
+            ConsoleColor.err("Er is een error opgetreden met het aanmaken van connenctie in mysql. Dit is de error: "+ ex
+                    + ".\n De applicatie wordt veilig afgesloten.");
             System.exit(0);
         }
     }
