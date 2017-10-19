@@ -93,7 +93,7 @@ public class InstallerV2 {
 
         //mysql array
         String[] mysqlArray = {
-            "usename", "password", "DBnaam"
+            "username", "password", "DBnaam"
         };
 
         //if stament
@@ -145,7 +145,7 @@ public class InstallerV2 {
                 //switch
                 switch (keyNaam) {
 
-                    case "usename":
+                    case "username":
 
                         ConsoleColor.out("Vul de usernaam van mysql in: ");
                         scannerInput = SC.next();
