@@ -185,17 +185,17 @@ public class InstallerV2 {
 
         //kijk of de connenctie met mysql opgezet kan worden
         boolean connectionDB = MysqlConnectionTest.mysqlConnecntieTest(username, password, ipAddress, poort, dbNaam);
-        if(!connectionDB){
+        if (!connectionDB) {
             ConsoleColor.err("Er kan geen connectie opgezet worden met mysql. Is mysql running?"
                     + " U wordt verzocht om alles opnieuw in te vullen.");
-            
+
             //roep mysql opnieuw op
             mysqlSetUp();
-        } 
-        
+        }
+
         //kijk of het bestand verandert is
         if (change) {
-            
+
             file.setProperty("username", username);
             file.setProperty("password", password);
             file.setProperty("ipAddress", ipAddress);
@@ -203,7 +203,7 @@ public class InstallerV2 {
             file.setProperty("DBnaam", dbNaam);
             file.setProperty("autoReconnect", autoReconnect);
             file.setProperty("ssl", ssl);
-            
+
             //fileOUtputStream
             FileOutputStream output = new FileOutputStream("./config/" + fileNaam + ".properties");
 
@@ -302,7 +302,8 @@ public class InstallerV2 {
 
         String[] apiKeyKey = {
             "bittrexApiKey", "bittrexApiSecretKey",
-            "poloniexApiKey", "poloniexApiSecretKey"
+            "poloniexApiKey", "poloniexApiSecretKey",
+            "usernameCexIO", "apiKeyCexIo", "apiSecretCexIo"
         };
 
         //laat LoadPropFile
@@ -319,6 +320,8 @@ public class InstallerV2 {
 
             //null check
             if (propertyCheck == true) {
+                
+                change = true;
 
                 //geef in de terminal aan de de key leeg is
                 ConsoleColor.out("Er bestaat een key niet in de properties file die wel zou moet bestaand.");
@@ -385,6 +388,36 @@ public class InstallerV2 {
                         file.setProperty(keyNaam, scannerInput.toString());
 
                         //break switch
+                        break;
+
+                    case "usernameCexIO":
+                        ConsoleColor.out("Cex.io username niet ingevuld. Vul de username in in:");
+
+                        //input
+                        scannerInput = SC.next();
+
+                        //voeg de input toe aan het bestand
+                        file.setProperty(keyNaam, scannerInput.toString());
+                        break;
+
+                    case "apiKeyCexIo":
+                        ConsoleColor.out("Cex.io is de apiKeyCex.io niet ingevuld. Vul de apiKey in:");
+
+                        //input
+                        scannerInput = SC.next();
+
+                        //voeg de input toe aan het bestand
+                        file.setProperty(keyNaam, scannerInput.toString());
+                        break;
+
+                    case "apiSecretCexIo":
+                        ConsoleColor.out("Cex.io is de ApiSecretCex.io niet ingevuld. Vul de apiKey in:");
+
+                        //input
+                        scannerInput = SC.next();
+
+                        //voeg de input toe aan het bestand
+                        file.setProperty(keyNaam, scannerInput.toString());
                         break;
 
                     default:

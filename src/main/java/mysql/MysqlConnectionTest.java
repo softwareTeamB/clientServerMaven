@@ -36,13 +36,13 @@ public class MysqlConnectionTest {
         try {
 
             ConsoleColor.out("-------- MySQL JDBC Connection Testing ------------");
-            ConsoleColor.out("jdbc:mysql://" + ipAddress + ":" + poort + "/" + dbNaam + usernaam + wachtwoord);
+            ConsoleColor.out("jdbc:mysql://" + ipAddress + ":" + poort + "/" + dbNaam +"/"+ usernaam +"/"+ wachtwoord);
 
             //connecntie op zetten
             connection = DriverManager
                     .getConnection("jdbc:mysql://" + ipAddress + ":" + poort + "/" + dbNaam, usernaam, wachtwoord);
         } catch (SQLException e) {
-            ConsoleColor.err("Er is een probleem met de connenctie op met mysql op te zetten. Error is: " + e);
+            ConsoleColor.err("Er is een probleem met de connectie op met mysql op te zetten. Error is: " + e);
             return false;
         }
 
