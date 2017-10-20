@@ -1,6 +1,8 @@
 package privateRouter.packageApi;
 
 import global.ConsoleColor;
+import global.LoadPropFile;
+import global.Tijd;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -13,6 +15,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
+import java.util.Properties;
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -23,10 +26,32 @@ import javax.crypto.spec.SecretKeySpec;
  */
 public class CexIoProtocall {
 
-    protected final String username;
-    protected final String apiKey;
-    protected final String apiSecret;
+    protected String username;
+    protected String apiKey;
+    protected String apiSecret;
     protected int nonce;
+
+    /**
+     * Constructor
+     */
+    public CexIoProtocall() {
+
+        try {
+            Properties prop = LoadPropFile.loadPropFile("apiKeys");
+            
+            this.username = prop.getProperty("usernameCexIO");
+            this.apiKey = prop.getProperty("apiKeyCexIo");
+            this.apiSecret = prop.getProperty("apiSecretCexIo");
+            
+        } catch (IOException ex) {
+            ConsoleColor.error("Er is een error in de contructor van bittrexProtocall. Dit is de error: " + ex
+                    + "\nDit software wordt opgesloten.");
+
+            //Sluit het systeem af
+            System.exit(0);
+        }
+
+    }
 
     /**
      * Creates a CexAPI Object.
@@ -50,7 +75,7 @@ public class CexIoProtocall {
     @Override
     public String toString() {
         return "{\"username\":\"" + this.username + "\",\"apiKey\":\"" + this.apiKey
-                + "\",\"apiSecret\":\"" + this.apiSecret + "\",\"nonce\":\"" + this.nonce + "\"}";
+                + "\",\"apiSecret\":\"" + this.apiSecret + "\",\"nonce\":\"" +Tijd.getTimeStamp() + "\"}";
     }
 
     /**
@@ -60,7 +85,7 @@ public class CexIoProtocall {
      */
     private String signature() {
         ++this.nonce;
-        String message = new String(this.nonce + this.username + this.apiKey);
+        String message = new String(Tijd.getTimeStamp() + this.username + this.apiKey);
         Mac hmac = null;
 
         try {
@@ -68,11 +93,7 @@ public class CexIoProtocall {
             SecretKeySpec secret_key
                     = new SecretKeySpec(((String) this.apiSecret).getBytes("UTF-8"), "HmacSHA256");
             hmac.init(secret_key);
-        } catch (NoSuchAlgorithmException e) {
-            ConsoleColor.err(e.toString());
-        } catch (InvalidKeyException e) {
-            ConsoleColor.err(e.toString());
-        } catch (UnsupportedEncodingException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeyException | UnsupportedEncodingException e) {
             ConsoleColor.err(e.toString());
         }
 
@@ -117,7 +138,7 @@ public class CexIoProtocall {
                     if (auth) {
                         // Generate POST variables and catch errors.
                         String tSig = this.signature();
-                        String tNon = String.valueOf(this.nonce);
+                        String tNon = String.valueOf(Tijd.getTimeStamp());
 
                         content
                                 = "key=" + URLEncoder.encode(this.apiKey, charset) + "&signature="
