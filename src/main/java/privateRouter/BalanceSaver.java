@@ -6,9 +6,12 @@ import global.ConsoleColor;
 import global.ErrorMessageResponse;
 import mysql.Mysql;
 import java.sql.SQLException;
+import java.util.Iterator;
 import privateRouter.packageApi.BittrexProtocall;
+import privateRouter.packageApi.CexIoProtocall;
 
 /**
+ * klasse die voor balanceSaver werkt
  *
  * @author michel
  */
@@ -16,8 +19,10 @@ public class BalanceSaver {
 
     //exchange id nummer
     private final int ID_BITTREX;
+    private int cexIo;
 
     Mysql mysql = new Mysql();
+    CexIoProtocall cexIoProtocall = new CexIoProtocall();
     BittrexProtocall bittrexPrototcall = new BittrexProtocall();
 
     /**
@@ -29,7 +34,7 @@ public class BalanceSaver {
 
         try {
             tempBittrex = mysql.mysqlExchangeNummerV2("bittrex");
-
+            cexIo = mysql.mysqlExchangeNummerV2("cexIo");
         } catch (Exception ex) {
             ConsoleColor.err("Er is een error bij balanceSaver in de construcotr. Dit is de error: "
                     + ex + "\n De software wordt afgesloten.");
@@ -50,6 +55,7 @@ public class BalanceSaver {
 
         //roep de methodens op
         balanceBittrex();
+        balaneCexIo();
     }
 
     /**
@@ -93,6 +99,45 @@ public class BalanceSaver {
     }
 
     /**
+     * Methodne om de balance van cex.io op te slaan
+     */
+    public void balaneCexIo() {
+
+        //vraag de balance op
+        String balanceString = cexIoProtocall.balance();
+
+        ConsoleColor.out(balanceString);
+
+        //maak er een object van 
+        JSONObject object = new JSONObject(balanceString);
+
+        //zorg dat er een key kompt
+        Iterator<String> keys = object.keys();
+        if (keys.hasNext()) {
+
+            ConsoleColor.out(keys.next());
+
+            //variable
+            String cointag = keys.next();
+
+            //object1
+            JSONObject object1 = object.getJSONObject(cointag);
+
+            //balance waardes
+            double available = object1.getDouble("available");
+            double orders = object1.getDouble("orders");
+            double balance = available + orders;
+
+            try {
+                //roep de methoden op die er voor zorgt dat alles goed verwerkt wordt
+                balanceChecker(cexIo, cointag, balance, orders, available);
+            } catch (Exception ex) {
+                ConsoleColor.err("" + ex);
+            }
+        }
+    }
+
+    /**
      * Methoden die na kijkt of de balance in mysql en of die geupdate moet worden
      *
      * @param exchangeID id van de exchange
@@ -102,7 +147,8 @@ public class BalanceSaver {
      * @param available hoeveel er beschikbaar is
      * @throws java.lang.Exception als er in het proces een error optreed
      */
-    public void balanceChecker(int exchangeID, String cointag, double balance, double pending, double available) throws Exception {
+    public void balanceChecker(int exchangeID, String cointag, double balance, double pending, double available)
+            throws Exception {
 
         //kijk of de balance het zelfde is gebleven
         String sqlStament = "SELECT COUNT(*) AS total FROM balance "
