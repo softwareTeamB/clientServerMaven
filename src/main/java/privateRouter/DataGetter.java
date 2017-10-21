@@ -26,8 +26,7 @@ public class DataGetter {
     public double[][] getBalance(String mainCoinString, String marktCoinString, String handelsplaats) throws SQLException, Exception {
 
         //vraag het exchangeNummer op
-        String sqlStament = "SELECT idExchangeLijst AS nummer FROM exchangeLijst WHERE handelsplaats='" + handelsplaats + "'";
-        int idExchange = myql.mysqlExchangeNummerV2(sqlStament);
+        int idExchange = myql.mysqlExchangeNummerV2(handelsplaats);
 
         //maak de array aan
         double[][] returnArray = new double[2][3];

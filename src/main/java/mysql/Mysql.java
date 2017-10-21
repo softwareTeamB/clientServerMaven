@@ -108,9 +108,9 @@ public class Mysql {
      * @throws Exception andere exceptions
      */
     public int mysqlExchangeNummerV2(String exchange) throws SQLException, Exception {
-
+        
         //return
-        ResultSet rs = stmt.executeQuery("select getExchangeNummer('bittrex') AS nummer;");
+        ResultSet rs = stmt.executeQuery("select getExchangeNummer('"+exchange+"') AS nummer;");
         while (rs.next()) {
             return rs.getInt("nummer");
         }
