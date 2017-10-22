@@ -59,4 +59,11 @@ public interface frameWorkArrayList {
      * @return return een object
      */
     public ArrayList sort(ArrayList strucutre);
+
+    /**
+     * Methoden die van een arrayList een arrayMaakt
+     * @param structure ArrayList
+     * @return een object ArrayList
+     */
+    public Object[] makeArray(ArrayList structure);
 }

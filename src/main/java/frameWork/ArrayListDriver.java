@@ -131,11 +131,39 @@ public class ArrayListDriver implements frameWorkArrayList {
      */
     @Override
     public ArrayList sort(ArrayList strucutre) {
-        
+
         //collections arrayList
         Collections.sort(strucutre);
-        
+
         //return de gesorterde arrayTerug
         return strucutre;
+    }
+
+    /**
+     * Methoden die van een arrayList een arrayMaakt
+     *
+     * @param structure ArrayList
+     * @return een object ArrayList
+     */
+    @Override
+    public Object[] makeArray(ArrayList structure) {
+        
+        //vraag de arrayList grote op
+        int grote = size(structure);
+        
+        //maak de arrayList aan
+        Object[] objectArray = new Object[grote];
+        
+        //loop door de array heen
+        for (int i = 0; i < structure.size(); i++) {
+            
+            //pak het eerste element van de arrayList en zet hem in de eerste volgende positie in de array
+            objectArray[i] = structure.get(i);
+        }
+        
+        //return de array
+        return objectArray;
+        
+        
     }
 }
