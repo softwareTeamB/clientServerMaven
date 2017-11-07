@@ -1,12 +1,17 @@
 package tradeEngine;
 
+import java.util.ArrayList;
+
 /**
  *
  * @author michel
  */
 public class MainEngine {
 
-    
+    /**
+     * loadOrderSetting is voor een settings van de orders
+     */
+    private ArrayList loadOrderSetting;
     
     
     /**
@@ -14,7 +19,6 @@ public class MainEngine {
      */
     public void main() {
         
-        //
         
         
         
@@ -23,13 +27,30 @@ public class MainEngine {
     }
     
     
+    public void loadOrderSettings(){
     
+        
+        
+        
+        
+    }
     
+    public void setOrder(){
     
+        
+        
+        
+        
+    }
     
+    public void calcOrderRuimte(){
     
+        
+        
+        
+        
     
-    
+    }
     
     
     public void ordertack(){

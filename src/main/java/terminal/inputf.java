@@ -7,7 +7,7 @@ import java.util.Scanner;
  *
  * @author michel
  */
-public class input {
+public class inputf {
 
     //Het object scanner
     private Scanner sc;
@@ -15,7 +15,7 @@ public class input {
     /**
      * Construcor
      */
-    public input() {
+    public inputf() {
 
         //maak de scanner aan
         sc = new Scanner(System.in);
@@ -26,7 +26,7 @@ public class input {
      */
     public void mainKlasse() {
 
-        //het object input
+        //het object inputf
         Object inputObject = sc.next();
 
         switch (inputObject.toString()) {
@@ -59,7 +59,10 @@ public class input {
                 //methoden voor de balance
                 balance();
                 break;
-
+            case "3":
+                
+                
+                break;
             default:
                 ConsoleColor.out("U heeft geen geldige input gegevens. Typ help in om alle commands te zien.");
         }
@@ -81,7 +84,15 @@ public class input {
         System.out.printf(format, "Wijzig properties bestanden" , 0);
         System.out.printf(format, "Wijzig apiKeys", 1);
         System.out.printf(format, "Laat balance zien", 2);
+        System.out.printf(format, "orders", 3);
+        
+        
+        
         System.out.printf(format, "Sluiten het systeem af:", "exit");
+    }
+    
+    private void orderSetting(){
+    
     }
 
     /**
@@ -110,5 +121,14 @@ public class input {
     private void balance() {
 
         ConsoleColor.err("De balance laten zien moeten nog gebouwd worden.");
+    }
+    
+    /**
+     * orderSettings
+     */
+    private void orderSettings(){
+        
+        
+        
     }
 }

@@ -1,29 +1,28 @@
 package clientserver;
 
+import JSON.JSONArray;
+import frameWork.ArrayListDriver;
 import global.ConsoleColor;
 import global.FileSystem;
+import global.GetCointags;
 import http.Http;
 import java.io.File;
 import java.io.IOException;
-import java.net.ProtocolException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
-import java.util.Date;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import marktData.MainSaveConstroller;
-import privateRouter.BalanceSaver;
+import privateRouter.BalanceSaverV2;
 import privateRouter.DataGetter;
 import privateRouter.Deposit;
 import privateRouter.UpdateOrders;
+import privateRouter.packageApi.Bitfinex;
 import privateRouter.packageApi.BittrexProtocall;
-import terminal.input;
+import terminal.inputf;
 import updater.DatabaseUpdater;
 
 /**
@@ -35,48 +34,60 @@ public class ClientServer {
 
     private static String url = "127.0.0.1:7090";
     private static String versieCheck = "/versieCheck.txt";
-    static FileSystem fileSystem = new FileSystem();
-    static Http http = new Http();
-    static DatabaseUpdater dataBaseUpdater = new DatabaseUpdater();
-    static FileSystem f = new FileSystem();
-    static BalanceSaver balanceSaver = new BalanceSaver();
 
-    private static TimerTask task1 = new TimerTask() {
+    public static FileSystem fileSystem;
+    public static DatabaseUpdater dataBaseUpdater;
+    public static ArrayListDriver arrayListDriver;
 
-        @Override
-        public void run() {
+    public static Http http;
 
-            System.out.println("i");
-        }
-    };
+    /**
+     * Basis url van belangrijke websites
+     */
+    public static String cexIo = "https://cex.io/api";
+    public static String coinmarketcapUrl = "https://api.coinmarketcap.com/v1";
+    public static String clientUrlServer = "http://127.0.0.1:9091";
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
-        InstallerV2 iv2 = new InstallerV2();
-        iv2.main();
 
-        input i = new input();
+        //maak het object aan voor de installerV2
+        //InstallerV2 iv2 = new InstallerV2();
+        //iv2.main();
+        // hier wodt de terminal input aangemaakt en opgestart in een apart thread
+        inputf i = new inputf();
         Thread thread = new Thread() {
+            @Override
             public void run() {
                 i.mainKlasse();
             }
         };
 
-        //great timer
-        Timer timer = new Timer();
-
-        //int reloadTime = 1000;
-        //timer schema
-        //timer.schedule(task1, new Date(), reloadTime);
         thread.start();
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+
+        //http object
+        http = new Http();
+
+        //maak alle objecten aan
+        fileSystem = new FileSystem();
+        DatabaseUpdater dataBaseUpdater = new DatabaseUpdater();
+        arrayListDriver = new ArrayListDriver();
 
         UpdateOrders updateOrrders = new UpdateOrders();
         updateOrrders.updateOrders();
-
-        BittrexProtocall bp = new BittrexProtocall();
 
         Deposit deposit = new Deposit();
         deposit.mainDeposit();
@@ -90,8 +101,8 @@ public class ClientServer {
             ConsoleColor.err("" + ex);
         }
 
-        ConsoleColor.out(bp.getBalances());
-        balanceSaver.balance();
+        BalanceSaverV2 bV2 = new BalanceSaverV2();
+        bV2.balance();
 
         //kijk of config folder bestaat
         String bestandLocatie = "config/";
@@ -109,26 +120,20 @@ public class ClientServer {
         }
 
         //laat mainSaveController
-        try {
+        /* try {
             MainSaveConstroller mainSaveConstroller = new MainSaveConstroller();
         } catch (Exception ex) {
             System.err.println(ex);
             System.exit(0);
-        }
-
-        new Installer();
-
-        //run de versieCheck
-        //versieCheck();
-        //kijk of er nieuwe markt of exchange in de lijst moet staan
-        //doe dit om de versie check de vergelijken met jou eigen versie die in het systeem is opgelagen
+        }*/
     }
 
     /**
      * VersieChcek methoden is om na te gaan of het database nog up to data is
      */
-    private static void versieCheck() {
+    /*private static void versieCheck() {
 
+        //Http http = new Http();
         //kijk of versieCheck.txt bestaat
         String naamVersieCheck = "versieCheck.txt";
         String versieCheckLocal;
@@ -141,8 +146,7 @@ public class ClientServer {
             dataBaseUpdater.databaseUpdater();
 
             //run de methoden op de nieuwe versie check op te slaan
-            versieCheckUpdate();
-
+            //versieCheckUpdate();
         } else {
 
             //vraag aan de server op welke versie er bij de server staat
@@ -164,13 +168,5 @@ public class ClientServer {
             }
 
         }
-
-    }
-
-    /**
-     * Deze methoden slaat de nieuwe versieCheck op
-     */
-    private static void versieCheckUpdate() {
-
-    }
+    }*/
 }

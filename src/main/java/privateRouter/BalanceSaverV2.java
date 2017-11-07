@@ -2,39 +2,52 @@ package privateRouter;
 
 import JSON.JSONArray;
 import JSON.JSONObject;
+import frameWork.ArrayListDriver;
 import global.ConsoleColor;
 import global.ErrorMessageResponse;
-import mysql.Mysql;
+import global.GetCointags;
+import http.Http;
 import java.sql.SQLException;
-import java.util.Iterator;
+import java.util.ArrayList; 
+import mysql.Mysql;
 import privateRouter.packageApi.BittrexProtocall;
 import privateRouter.packageApi.CexIoProtocall;
 
 /**
- * klasse die voor balanceSaver werkt
+ * BalanceSaver v2
  *
  * @author michel
  */
-public class BalanceSaver {
+public class BalanceSaverV2 {
+
+    //coinTagLijst
+    private ArrayList coinTagLijst;
 
     //exchange id nummer
-    private final int ID_BITTREX;
+    private int ID_BITTREX;
     private int cexIo;
+    private int poloniexID;
 
+    //array
+    private Object[] cexIoArray;
+    //array
+    //private String[] cexIoArray;
     Mysql mysql = new Mysql();
     CexIoProtocall cexIoProtocall = new CexIoProtocall();
     BittrexProtocall bittrexPrototcall = new BittrexProtocall();
+    GetCointags getCointags = new GetCointags();
+    ArrayListDriver arrayListDriver = new ArrayListDriver();
+    Http http = new Http();
 
     /**
      * Constructor
      */
-    public BalanceSaver() {
+    public BalanceSaverV2() {
 
         int tempBittrex = 0;
 
         try {
-            tempBittrex = mysql.mysqlExchangeNummerV2("bittrex");
-            cexIo = mysql.mysqlExchangeNummerV2("cexIo");
+            ID_BITTREX = mysql.mysqlExchangeNummerV2("bittrex");
         } catch (Exception ex) {
             ConsoleColor.err("Er is een error bij balanceSaver in de construcotr. Dit is de error: "
                     + ex + "\n De software wordt afgesloten.");
@@ -42,7 +55,18 @@ public class BalanceSaver {
             System.exit(0);
         }
 
-        this.ID_BITTREX = tempBittrex;
+        try {
+            //poloniex nummer
+            poloniexID = mysql.mysqlExchangeNummerV2("poloniex");
+        } catch (Exception ex) {
+            ConsoleColor.err("Er is een error bij balanceSaver in de construcotr. Dit is de error: "
+                    + ex + "\n De software wordt afgesloten.");
+
+            System.exit(0);
+        }
+
+        //roep de cexIoConstructor op
+        cexIoConstructor();
 
         //terminal bericht
         ConsoleColor.out("Constructor balance saver is geladen.");
@@ -55,7 +79,8 @@ public class BalanceSaver {
 
         //roep de methodens op
         balanceBittrex();
-        balaneCexIo();
+        balancePoloniex();
+        //balanceCexIo();
     }
 
     /**
@@ -99,34 +124,94 @@ public class BalanceSaver {
     }
 
     /**
-     * Methodne om de balance van cex.io op te slaan
+     * Poloniex
      */
-    public void balaneCexIo() {
+    public void balancePoloniex() {
 
         //vraag de balance op
-        String balanceString = cexIoProtocall.balance();
+        String url = clientserver.ClientServer.clientUrlServer + "/poloniex/getBalance";
+        String httpReponse;
+        try {
+            httpReponse = http.getHttpBrowser(url);
 
-        ConsoleColor.out(balanceString);
+            //maak er een jsonobject van
+            JSONObject object = new JSONObject(httpReponse);
 
-        //maak er een object van 
-        JSONObject object = new JSONObject(balanceString);
+            //loop door alle keys heen
+            for (int i = 0; i < object.names().length(); i++) {
 
-        //zorg dat er een key kompt
-        Iterator<String> keys = object.keys();
-        if (keys.hasNext()) {
+                //vraag keyNaam op
+                String keyNaam = object.names().getString(i);
 
-            ConsoleColor.out(keys.next());
+                //vraag het object aan
+                JSONObject object2 = object.getJSONObject(keyNaam);
 
-            //variable
-            String cointag = keys.next();
+                //vraag de balance op
+                double available = object2.getDouble("available");
+                double orders = object2.getDouble("onOrders");
+                double balance = orders + available;
 
-            //object1
-            JSONObject object1 = object.getJSONObject(cointag);
+                //roep de balanceChecker op
+                balanceChecker(poloniexID, keyNaam, balance, orders, available);
+            }
+        } catch (Exception ex) {
 
-            //balance waardes
-            double available = object1.getDouble("available");
-            double orders = object1.getDouble("orders");
-            double balance = available + orders;
+            //ConsoleColor error bericht
+            ConsoleColor.err(ex);
+
+            //return object
+            return;
+        }
+        ConsoleColor.out(httpReponse);
+
+    }
+
+    /**
+     * Methoden die cex.io balance op slaat
+     */
+    public void balanceCexIo() {
+
+        String httpBalanceReponse = cexIoProtocall.balance();
+        JSONObject objectReponse = new JSONObject(httpBalanceReponse);
+        ConsoleColor.out(objectReponse);
+
+        //for loop
+        for (int i = 0; i < cexIoArray.length; i++) {
+            String cointag = cexIoArray[i].toString();
+
+            //haal het eerst volgende object op
+            JSONObject specifiekeObject = objectReponse.getJSONObject(cointag);
+
+            ConsoleColor.warn(specifiekeObject);
+
+            //double default on -1
+            double available = -1;
+            double orders = -1;
+            double balance = -1;
+
+            //als available en orders bestaat
+            if (specifiekeObject.has("available") && specifiekeObject.has("orders")) {
+
+                //sla de balance waarde op
+                available = specifiekeObject.getDouble("available");
+                orders = specifiekeObject.getDouble("orders");
+                balance = available + orders;
+            } else {
+
+                //als available belemd is
+                if (specifiekeObject.has("available")) {
+
+                    //sla de balance waarde op
+                    available = specifiekeObject.getDouble("available");
+                }
+
+                //als orders bekend is
+                if (specifiekeObject.has("orders")) {
+
+                    //vraag orders op
+                    orders = specifiekeObject.getDouble("orders");
+                }
+            }
 
             try {
                 //roep de methoden op die er voor zorgt dat alles goed verwerkt wordt
@@ -182,7 +267,6 @@ public class BalanceSaver {
                 //roep de methoden op om de balance data te updaten
                 balanceUpdater(exchangeID, cointag, balance, pending, available);
             }
-
         }
     }
 
@@ -201,9 +285,10 @@ public class BalanceSaver {
         //sql updater
         String sqlUpdater = "UPDATE balance SET "
                 + "balance=" + balance + ", pending=" + pending + ", available=" + available
-                + " WHERE idExchangeLijst" + exchangeID + " AND cointag='" + cointag + "'";
+                + " WHERE idExchangeLijst=" + exchangeID + " AND cointag='" + cointag + "'";
 
         mysql.mysqlExecute(sqlUpdater);
+        ConsoleColor.out("De balance van cointag " + cointag + " is toegevoegd.");
     }
 
     /**
@@ -225,5 +310,52 @@ public class BalanceSaver {
         mysql.mysqlExecute(sqlInsert);
 
         ConsoleColor.out("De balance is toegevoegd van cointag: " + cointag);
+    }
+
+    /**
+     * cexIoConstrucot
+     */
+    private void cexIoConstructor() {
+
+        //tijdelijke arrayList
+        ArrayList tempArrayLijst = new ArrayList();
+
+        //voeg standaart toe die niet in coinmarketcap staan
+        tempArrayLijst.add("EUR");
+        tempArrayLijst.add("USD");
+        tempArrayLijst.add("GHS");
+        //arrayLijst
+        coinTagLijst = getCointags.getCointags();
+
+        //vraag de balance op
+        String balanceString = cexIoProtocall.balance();
+
+        //maak er een jsonObject van
+        JSONObject object = new JSONObject(balanceString);
+
+        //loop
+        for (int i = 0; i < coinTagLijst.size(); i++) {
+            String cointag = coinTagLijst.get(i).toString();
+
+            //kijk of de key bestaat
+            if (object.has(cointag)) {
+
+                //voeg de coin in de tempArrayLijst
+                tempArrayLijst.add(cointag);
+            }
+        }
+
+        ConsoleColor.warn(tempArrayLijst);
+
+        //kijk hoe groot de tempArrayLijst is
+        int arrayLijstGrote = tempArrayLijst.size();
+
+        ConsoleColor.warn(arrayLijstGrote);
+
+        //cointag arrayLijst
+        cexIoArray = new Object[arrayLijstGrote];
+
+        //ze de tijdelijke tempArrayLijst om in een array
+        cexIoArray = clientserver.ClientServer.arrayListDriver.makeArray(tempArrayLijst);
     }
 }
