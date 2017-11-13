@@ -85,7 +85,7 @@ public class MailServer {
 
             // Send message
             Transport.send(message);
-            System.out.println("Sent message successfully....");
+            ConsoleColor.out("Sent message successfully....");
         } catch (MessagingException mex) {
             mex.printStackTrace();
         }

@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import marktData.MainSaveConstroller;
+import mysql.Mysql;
 import privateRouter.BalanceSaverV2;
 import privateRouter.DataGetter;
 import privateRouter.Deposit;
@@ -67,7 +68,8 @@ public class ClientServer {
 
         thread.start();
         
-        
+        //mysqlCheck
+        mysqlExchangeCheck();
         
         
         
@@ -169,4 +171,101 @@ public class ClientServer {
 
         }
     }*/
+    
+        /**
+     * methoden die na kijkt op handelsplaats goed werkt
+     */
+    private static void mysqlExchangeCheck() {
+
+        //mysql object
+        Mysql mysql = new Mysql();
+
+        //string array voor exchangeLijst
+        String[] exchangeNaamArray = {"poloniex", "bittrex"};
+        String[] verbindingsTeken = {"_", "-"};
+
+        //loop door de exchangeNaam heen
+        for (int i = 0; i < exchangeNaamArray.length; i++) {
+
+            //exchange naam
+            String exchangeNaam = exchangeNaamArray[i];
+
+            //count string
+            String countSql = "SELECT COUNT(*) AS total FROM exchangeLijst "
+                    + "WHERE handelsplaats ='" + exchangeNaam + "' "
+                    + "AND verbindingsTeken='" + verbindingsTeken[i] + "'";
+
+            //vraag kijk of de markt er in staat
+            int count;
+            try {
+                //count stament
+                count = mysql.mysqlCount(countSql);
+            } catch (Exception ex) {
+                ConsoleColor.err(ex);
+
+                //fatale error sluit het systeem af
+                System.exit(0);
+                continue;
+            }
+
+            //stament als count 0 is anders naar de else stament
+            if (count == 0) {
+
+                //voeg de exchange toe en de verbindings teken
+                String sqlInsert = "INSERT INTO exchangeLijst (handelsplaats, verbindingsTeken) "
+                        + "VALUES('" + exchangeNaam + "', '" + verbindingsTeken[i] + "')";
+
+                //voer het stament uit
+                try {
+                    mysql.mysqlExecute(sqlInsert);
+                } catch (SQLException ex) {
+                    ConsoleColor.err(ex);
+
+                    //fatale error sluit het systeem af
+                    System.exit(0);
+                }
+
+            } else {
+
+                //kijk of de exchangeNaam bekend is
+                String countSql2 = "SELECT COUNT(*) AS total FROM exchangeLijst "
+                        + "WHERE handelsplaats ='" + exchangeNaam + "'";
+
+                //vraag kijk of de markt er in staat
+                int count2;
+                try {
+                    //count stament
+                    count2 = mysql.mysqlCount(countSql2);
+                } catch (Exception ex) {
+                    ConsoleColor.err(ex);
+
+                    //fatale error sluit het systeem af
+                    System.exit(0);
+                    continue;
+                }
+
+                //als het 1 is doe niks als het 0 is run het update stament
+                if (count2 == 0) {
+
+                    //update sql stament voor verbindigsTeken
+                    String updateSql = "UPDATE exchangeLijst SET verbindingsTeken='" + verbindingsTeken[i] + "'";
+
+                    //voer het stament uit
+                    try {
+                        mysql.mysqlExecute(updateSql);
+                    } catch (SQLException ex) {
+                        ConsoleColor.err(ex);
+
+                        //fatale error sluit het systeem af
+                        System.exit(0);
+                    }
+
+                }
+
+            }
+
+            ConsoleColor.out("MysqlExchangeCheck is doorlopen.");
+        }
+    }
+
 }

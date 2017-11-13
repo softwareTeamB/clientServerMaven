@@ -4,13 +4,9 @@ import JSON.JSONArray;
 import JSON.JSONObject;
 import global.ConsoleColor;
 import global.ErrorMessageResponse;
-import global.GetExchangeId;
 import mysql.Mysql;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import privateRouter.packageApi.BittrexProtocall;
 import Mail.MailServer;
-import javax.mail.MessagingException;
 
 /**
  * Klasse die kijkt of er nieuwe deposit
@@ -19,16 +15,19 @@ import javax.mail.MessagingException;
  */
 public class Deposit {
 
+    //maak objecten aan
     BittrexProtocall bp = new BittrexProtocall();
-
-    private static int ID_EXCHANGE = GetExchangeId.bittrexNummer();
     Mysql mysql = new Mysql();
     MailServer mail = new MailServer();
+    
+    //change is er geweest
+    private boolean addTransactie = false;
 
     /**
      * Main methoden
      */
     public void mainDeposit() {
+
         bittrexDeposit();
     }
 
@@ -52,6 +51,20 @@ public class Deposit {
         //zet het in een JSONArray
         JSONArray array = bittrexResponseObject.getJSONArray("result");
 
+        //krijg het idExchange van bittre
+        int idExchange;
+        try {
+            idExchange = mysql.mysqlExchangeNummerV2("bittrex");
+        } catch (Exception ex) {
+
+            //ConsoleColor bericht
+            ConsoleColor.err("Er is een error op getreden bij depositCheck. Dit is de error: " + ex);
+
+            //stop de methoden zodat er geen problemen zijn met idExchange dat neit niet gevuld is
+            return;
+
+        }
+
         //for loop
         for (int i = 0; i < array.length(); i++) {
 
@@ -69,7 +82,7 @@ public class Deposit {
 
             try {
                 //roep de depositCheck in
-                depositCheck(txId, ID_EXCHANGE, amount, cointag);
+                depositCheck(txId, idExchange, amount, cointag);
             } catch (Exception ex) {
                 ConsoleColor.err("Er is een error op getreden bij depositCheck. Dit is de error: " + ex);
             }
@@ -88,10 +101,13 @@ public class Deposit {
     private void depositCheck(String txId, int idExchange, double amount, String cointag) throws Exception {
 
         //sqlcount string
-        String sqlCount = "SELECT COUNT(*) AS total FROM depositLijst WHERE txid='" + txId + "' AND idExchangeLijst='" + idExchange + "'";
+        String sqlCount = "SELECT COUNT(*) AS total FROM depositLijst WHERE txid='" + txId + 
+                "' AND idExchangeLijst='" + idExchange + "'";
         int count = mysql.mysqlCount(sqlCount);
         if (count == 0) {
-
+            
+            //zet de variable dat er een vandereing is op true
+            
             //voeg de transactie in de database
             String sqlInsert = "INSERT INTO depositLijst (txid, idExchangeLijst, cointag, hoeveelheid) "
                     + "VALUES ('" + txId + "', '" + idExchange + "', '" + cointag + "', '" + amount + "')";
@@ -101,10 +117,10 @@ public class Deposit {
             ConsoleColor.out("De transactie is toegevoegd in de database.");
 
             String htmlBody = "<p> txId: " + txId + "</p><p>exchange naam: " + idExchange + "</p>"
-                    + "<p> Cointag: " + cointag + "</p><p>Hoeveelheid: " + amount + "</p>";
-            
+                    + "<p> Cointag: " + cointag + "</p><p>Hoeveelheid: " + amount + "</p><br>";
+
             mail.generateAndSendEmail("", htmlBody);
-            
+
         }
 
     }
