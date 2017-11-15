@@ -1,28 +1,20 @@
 package clientserver;
 
-import JSON.JSONArray;
 import frameWork.ArrayListDriver;
 import global.ConsoleColor;
 import global.FileSystem;
-import global.GetCointags;
 import http.Http;
-import java.io.File;
+import http.HttpPost;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import marktData.MainSaveConstroller;
 import mysql.Mysql;
 import privateRouter.BalanceSaverV2;
 import privateRouter.DataGetter;
 import privateRouter.Deposit;
-import privateRouter.UpdateOrders;
-import privateRouter.packageApi.Bitfinex;
-import privateRouter.packageApi.BittrexProtocall;
+import privateRouter.Poloniex;
 import terminal.inputf;
 import updater.DatabaseUpdater;
 
@@ -32,6 +24,9 @@ import updater.DatabaseUpdater;
  * @author michel
  */
 public class ClientServer {
+    
+    //nodejs server url
+    public static String nodeJsUrl = "127.0.0.1:9091";
 
     private static String url = "127.0.0.1:7090";
     private static String versieCheck = "/versieCheck.txt";
@@ -41,6 +36,10 @@ public class ClientServer {
     public static ArrayListDriver arrayListDriver;
 
     public static Http http;
+    public static HttpPost httpPost = new HttpPost();
+    
+    //private routers poloniex
+    public static Poloniex poloniex = new Poloniex();
 
     /**
      * Basis url van belangrijke websites
@@ -88,8 +87,6 @@ public class ClientServer {
         DatabaseUpdater dataBaseUpdater = new DatabaseUpdater();
         arrayListDriver = new ArrayListDriver();
 
-        UpdateOrders updateOrrders = new UpdateOrders();
-        updateOrrders.updateOrders();
 
         Deposit deposit = new Deposit();
         deposit.mainDeposit();
