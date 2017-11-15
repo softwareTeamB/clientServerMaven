@@ -1,5 +1,6 @@
 package clientserver;
 
+import JSON.JSONObject;
 import frameWork.ArrayListDriver;
 import global.ConsoleColor;
 import global.FileSystem;
@@ -10,6 +11,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import mysql.Mysql;
 import privateRouter.BalanceSaverV2;
 import privateRouter.DataGetter;
@@ -48,6 +51,10 @@ public class ClientServer {
     public static String coinmarketcapUrl = "https://api.coinmarketcap.com/v1";
     public static String clientUrlServer = "http://127.0.0.1:9091";
 
+    //een jsonObject van een lijst met exchange id nummers
+    public static JSONObject exchangeIdJSONObject = new JSONObject();
+    
+    
     /**
      * @param args the command line arguments
      */
@@ -202,6 +209,8 @@ public class ClientServer {
 
                 //fatale error sluit het systeem af
                 System.exit(0);
+                
+                //dit is gedaan omdat java gewoon een domme taal is
                 continue;
             }
 
@@ -245,7 +254,8 @@ public class ClientServer {
                 if (count2 == 0) {
 
                     //update sql stament voor verbindigsTeken
-                    String updateSql = "UPDATE exchangeLijst SET verbindingsTeken='" + verbindingsTeken[i] + "'";
+                    String updateSql = "UPDATE exchangeLijst SET verbindingsTeken='" + verbindingsTeken[i] + "' "
+                            + "WHERE handelsplaats ='" + exchangeNaam + "'";
 
                     //voer het stament uit
                     try {
@@ -260,9 +270,24 @@ public class ClientServer {
                 }
 
             }
+            
+            try {
+                //haal het exchange nummer op uit het database
+                int exchangeId = mysql.mysqlNummer("SELECT idExchangeLijst AS nummer FROM exchangeLijst "
+                        + "WHERE handelsplaats='"+exchangeNaam+"'");
+            
+                //voeg de exchange to in de JSONobject toe
+                exchangeIdJSONObject.put(exchangeNaam, exchangeId);
+            } catch (Exception ex) {
+                ConsoleColor.err(ex);
+                
+                //sluit de applicatei! Fatale error
+                System.exit(0);
+            }
 
+            //bericht
             ConsoleColor.out("MysqlExchangeCheck is doorlopen.");
+            ConsoleColor.out(exchangeIdJSONObject);
         }
     }
-
 }
