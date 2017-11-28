@@ -92,16 +92,12 @@ public class MainEngine {
             //bereken de buy ruimte
             double buyRoom = calcBuyRoom(balanceData, maxHold, prijsWithFee, baseCoin, marktCoin);
 
-            ConsoleColor.warn(buyRoom);
-
             //kijk of de buy room grote is dat MIN_BUY
             if ((buyRoom * prijs) < MIN_BTC) {
 
                 //de buy room is te laag
                 continue;
             }
-
-            ConsoleColor.warn(buyRoom * prijs);
 
             //bereken hoeveel alles bij elkaar gaat kosten
             //double buyKost = buyRoom * prijs;
@@ -219,10 +215,6 @@ public class MainEngine {
 
         //vraag de balance data op van marktCoin
         double balanceMarktCoin = balanceData.getJSONArray(marktCoin).getDouble(0);
-
-        ConsoleColor.err(availableBaseCoin);
-        ConsoleColor.warn("" + prijs);
-        ConsoleColor.warn(balanceMarktCoin);
 
         //bereken de hoeveelheid wat kan worden aangeschaft
         //doet dit door de beschikbare balance te delen door de prijs
