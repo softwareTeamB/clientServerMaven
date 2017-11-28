@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package privateRouter.packageApi;
 
 import java.io.BufferedReader;
@@ -16,8 +11,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.HttpClientBuilder;
 import security.EncryptionUtility;
 
-import com.google.gson.*;
-import com.google.gson.reflect.TypeToken;
 import global.ConsoleColor;
 import global.FileSystem;
 import global.LoadPropFile;
@@ -32,24 +25,23 @@ public class BittrexProtocall {
     private String API_KEY;
     private String API_SECRET;
     private ConsoleColor consoleColor;
-    
+
     //maak object
     FileSystem filesystem = new FileSystem();
-    LoadPropFile loadPropFile = new LoadPropFile();
-    
+
     /**
      * Constuctor
      */
     public BittrexProtocall() {
-        
+
         try {
-            Properties config =  loadPropFile.loadPropFile("apiKeys");
+            Properties config = LoadPropFile.loadPropFile("apiKeys");
             this.API_KEY = config.getProperty("bittrexApiKey");
             this.API_SECRET = config.getProperty("bittrexApiSecretKey");
         } catch (IOException ex) {
-            consoleColor.error("Er is een error in de contructor van bittrexProtocall. Dit is de error: "+ex
+            ConsoleColor.error("Er is een error in de contructor van bittrexProtocall. Dit is de error: " + ex
                     + "\nDit software wordt opgesloten.");
-            
+
             //Sluit het systeem af
             System.exit(0);
         }
@@ -94,24 +86,24 @@ public class BittrexProtocall {
 
         return getJson(API_VERSION, MARKET, "buylimit", returnCorrectMap("market", market, "quantity", quantity, "rate", rate));
     }
-    
+
     /**
-     * @see Double enz word omgezet
+     * Double enz word omgezet
+     *
      * @param market handels plaats
      * @param quantityDouble de hoeveelheid
      * @param prijsDouble de prijs
      * @return uuid
      */
-    public String buyLimitv2(String market, double quantityDouble, double prijsDouble){
-        
+    public String buyLimitv2(String market, double quantityDouble, double prijsDouble) {
+
         //convert alles to string
         String quantity = Double.toString(quantityDouble);
         String rate = Double.toString(prijsDouble);
-        
+
         //String market, String quantity, String rate
-        return getJson(API_VERSION, MARKET, "buylimit", returnCorrectMap("market", market, "quantity", quantity, "rate", rate));    
+        return getJson(API_VERSION, MARKET, "buylimit", returnCorrectMap("market", market, "quantity", quantity, "rate", rate));
     }
-    
 
     public String buyMarket(String market, String quantity) { // Places a market buy in a specific market; returns the UUID of the order
 
@@ -123,23 +115,23 @@ public class BittrexProtocall {
         return getJson(API_VERSION, MARKET, "selllimit", returnCorrectMap("market", market, "quantity", quantity, "rate", rate));
     }
 
-        /**
+    /**
      * @see Double enz word omgezet
      * @param market handels plaats
      * @param quantityDouble de hoeveelheid
      * @param prijsDouble de prijs
      * @return uuid
      */
-    public String sellLimitv2(String market, double quantityDouble, double prijsDouble){
-        
+    public String sellLimitv2(String market, double quantityDouble, double prijsDouble) {
+
         //convert alles to string
         String quantity = Double.toString(quantityDouble);
         String rate = Double.toString(prijsDouble);
-        
+
         //String market, String quantity, String rate
-        return getJson(API_VERSION, MARKET, "selllimit", returnCorrectMap("market", market, "quantity", quantity, "rate", rate));    
+        return getJson(API_VERSION, MARKET, "selllimit", returnCorrectMap("market", market, "quantity", quantity, "rate", rate));
     }
-    
+
     public String sellMarket(String market, String quantity) { // Places a market sell in a specific market; returns the UUID of the order
 
         return getJson(API_VERSION, MARKET, "sellmarket", returnCorrectMap("market", market, "quantity", quantity));
@@ -177,7 +169,7 @@ public class BittrexProtocall {
     }
 
     public String getDepositAddres(String currency) { // Returns the deposit address for a specific currency - if one is not found, it will be generated
-        
+
         return getJson(API_VERSION, ACCOUNT, "getdepositaddress", returnCorrectMap("currency", currency));
     }
 
@@ -331,7 +323,6 @@ public class BittrexProtocall {
 
         return map;
     }*/
-
     private String getResponseBody(String url) {
 
         String result = null;
