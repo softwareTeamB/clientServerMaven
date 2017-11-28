@@ -50,7 +50,7 @@ public class Mysql {
      * @throws SQLException als er iets fout gaat
      */
     public ResultSet mysqlSelect(String sqlString) throws SQLException {
-
+        
         //return
         return stmt.executeQuery(sqlString);
     }

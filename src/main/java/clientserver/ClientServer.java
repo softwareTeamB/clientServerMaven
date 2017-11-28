@@ -1,5 +1,6 @@
 package clientserver;
 
+import JSON.JSONException;
 import JSON.JSONObject;
 import frameWork.ArrayListDriver;
 import global.ConsoleColor;
@@ -10,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,7 +20,9 @@ import privateRouter.BalanceSaverV2;
 import privateRouter.DataGetter;
 import privateRouter.Deposit;
 import privateRouter.Poloniex;
+import privateRouter.packageApi.BittrexProtocall;
 import terminal.inputf;
+import tradeEngine.MainEngine;
 import updater.DatabaseUpdater;
 
 /**
@@ -27,9 +31,11 @@ import updater.DatabaseUpdater;
  * @author michel
  */
 public class ClientServer {
-    
-    //nodejs server url
-    public static String nodeJsUrl = "127.0.0.1:9091";
+
+    /**
+     * JavaDoc voor de nodejsUrl. Dit is een url om het nodejs systeem met de exchange te communiseren
+     */
+    public static final String NODE_JS_URL = "http://127.0.0.1:9091";
 
     private static String url = "127.0.0.1:7090";
     private static String versieCheck = "/versieCheck.txt";
@@ -40,9 +46,12 @@ public class ClientServer {
 
     public static Http http;
     public static HttpPost httpPost = new HttpPost();
-    
+
+    //maak bittrex private router
+    public static BittrexProtocall bittrexProtocall;
+
     //private routers poloniex
-    public static Poloniex poloniex = new Poloniex();
+    public static Poloniex poloniex;
 
     /**
      * Basis url van belangrijke websites
@@ -53,8 +62,9 @@ public class ClientServer {
 
     //een jsonObject van een lijst met exchange id nummers
     public static JSONObject exchangeIdJSONObject = new JSONObject();
-    
-    
+    public static JSONObject exchangeFeeJSONObject = new JSONObject();
+    public static JSONObject exchangeVerbindingsTeken = new JSONObject();
+
     /**
      * @param args the command line arguments
      */
@@ -73,19 +83,28 @@ public class ClientServer {
         };
 
         thread.start();
-        
+
         //mysqlCheck
         mysqlExchangeCheck();
-        
-        
-        
-        
-        
-        
-        
-        
-        
 
+        //maak de poloniex private router aan
+        poloniex = new Poloniex();
+
+        //maak bittrex private router
+        bittrexProtocall = new BittrexProtocall();
+
+        /*
+         * Methoden werkt
+        try {
+            poloniex.setServerBalance();
+        } catch (Exception ex) {
+            Logger.getLogger(ClientServer.class.getName()).log(Level.SEVERE, null, ex);
+        }*/
+        /**
+         * Methoden werkt try { poloniex.setOrder("buy", "USDT", "XRP", 0.1, 100); } catch (Exception ex) {
+         * Logger.getLogger(ClientServer.class.getName()).log(Level.SEVERE, null, ex); } / /* Methoden werkt
+         * poloniex.cancelOrder("64081504477","USDT" ,"XRP");
+         */
         //http object
         http = new Http();
 
@@ -94,9 +113,20 @@ public class ClientServer {
         DatabaseUpdater dataBaseUpdater = new DatabaseUpdater();
         arrayListDriver = new ArrayListDriver();
 
-
         Deposit deposit = new Deposit();
         deposit.mainDeposit();
+
+        //blancee engine
+        BalanceSaverV2 bV2 = new BalanceSaverV2();
+        bV2.balance();
+
+        //order engine
+        MainEngine mainEngine = new MainEngine();
+        try {
+            mainEngine.loadOrderSettings("bla", 2);
+        } catch (SQLException ex) {
+            Logger.getLogger(ClientServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
         DataGetter dataGetter = new DataGetter();
         try {
@@ -106,10 +136,7 @@ public class ClientServer {
         } catch (Exception ex) {
             ConsoleColor.err("" + ex);
         }
-
-        BalanceSaverV2 bV2 = new BalanceSaverV2();
-        bV2.balance();
-
+        
         //kijk of config folder bestaat
         String bestandLocatie = "config/";
         Path path = Paths.get(bestandLocatie);
@@ -175,8 +202,7 @@ public class ClientServer {
 
         }
     }*/
-    
-        /**
+    /**
      * methoden die na kijkt op handelsplaats goed werkt
      */
     private static void mysqlExchangeCheck() {
@@ -187,6 +213,7 @@ public class ClientServer {
         //string array voor exchangeLijst
         String[] exchangeNaamArray = {"poloniex", "bittrex"};
         String[] verbindingsTeken = {"_", "-"};
+        String[] exchangeFeeArray = {"0.002", "0.0025"};
 
         //loop door de exchangeNaam heen
         for (int i = 0; i < exchangeNaamArray.length; i++) {
@@ -196,9 +223,7 @@ public class ClientServer {
 
             //count string
             String countSql = "SELECT COUNT(*) AS total FROM exchangeLijst "
-                    + "WHERE handelsplaats ='" + exchangeNaam + "' "
-                    + "AND verbindingsTeken='" + verbindingsTeken[i] + "'";
-
+                    + "WHERE handelsplaats ='" + exchangeNaam + "' ";
             //vraag kijk of de markt er in staat
             int count;
             try {
@@ -209,7 +234,7 @@ public class ClientServer {
 
                 //fatale error sluit het systeem af
                 System.exit(0);
-                
+
                 //dit is gedaan omdat java gewoon een domme taal is
                 continue;
             }
@@ -218,8 +243,8 @@ public class ClientServer {
             if (count == 0) {
 
                 //voeg de exchange toe en de verbindings teken
-                String sqlInsert = "INSERT INTO exchangeLijst (handelsplaats, verbindingsTeken) "
-                        + "VALUES('" + exchangeNaam + "', '" + verbindingsTeken[i] + "')";
+                String sqlInsert = "INSERT INTO exchangeLijst (handelsplaats, verbindingsTeken, exchangeFee) "
+                        + "VALUES('" + exchangeNaam + "', '" + verbindingsTeken[i] + "', '" + exchangeFeeArray[i] + "')";
 
                 //voer het stament uit
                 try {
@@ -235,7 +260,9 @@ public class ClientServer {
 
                 //kijk of de exchangeNaam bekend is
                 String countSql2 = "SELECT COUNT(*) AS total FROM exchangeLijst "
-                        + "WHERE handelsplaats ='" + exchangeNaam + "'";
+                        + "WHERE handelsplaats ='" + exchangeNaam + "' "
+                        + "AND verbindingsTeken='" + verbindingsTeken[i] + "' "
+                        + "AND exchangeFee='" + exchangeFeeArray[i] + "'";
 
                 //vraag kijk of de markt er in staat
                 int count2;
@@ -254,7 +281,8 @@ public class ClientServer {
                 if (count2 == 0) {
 
                     //update sql stament voor verbindigsTeken
-                    String updateSql = "UPDATE exchangeLijst SET verbindingsTeken='" + verbindingsTeken[i] + "' "
+                    String updateSql = "UPDATE exchangeLijst SET verbindingsTeken='" + verbindingsTeken[i] + ""
+                            + "', exchangeFee='" + exchangeFeeArray[i] + "' "
                             + "WHERE handelsplaats ='" + exchangeNaam + "'";
 
                     //voer het stament uit
@@ -270,17 +298,32 @@ public class ClientServer {
                 }
 
             }
-            
+
             try {
                 //haal het exchange nummer op uit het database
-                int exchangeId = mysql.mysqlNummer("SELECT idExchangeLijst AS nummer FROM exchangeLijst "
-                        + "WHERE handelsplaats='"+exchangeNaam+"'");
-            
-                //voeg de exchange to in de JSONobject toe
-                exchangeIdJSONObject.put(exchangeNaam, exchangeId);
-            } catch (Exception ex) {
+                ResultSet rs = mysql.mysqlSelect("SELECT * FROM exchangeLijst "
+                        + "WHERE handelsplaats='" + exchangeNaam + "'");
+
+                while (rs.next()) {
+
+                    //krijg het exchangeId nummer
+                    int exchangeId = rs.getInt("idExchangeLijst");
+
+                    //vraag de fee op
+                    String exchangeFee = "" + rs.getDouble("exchangeFee");
+
+                    //voeg de exchange to in de JSONobject toe
+                    exchangeIdJSONObject.put(exchangeNaam, exchangeId);
+
+                    //voeg de exchangeFee op
+                    exchangeFeeJSONObject.put("" + exchangeId, exchangeFee);
+
+                    exchangeVerbindingsTeken.put("" + exchangeId, rs.getString("verbindingsteken"));
+
+                }
+            } catch (JSONException | SQLException ex) {
                 ConsoleColor.err(ex);
-                
+
                 //sluit de applicatei! Fatale error
                 System.exit(0);
             }

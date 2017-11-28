@@ -26,10 +26,15 @@ public interface exchangeInterface {
     /**
      * Plaats order
      *
+     * @param type buy of sell
+     * @param baseCoin basis coin
+     * @param marktCoin markt coin
+     * @param prijs de prijs zonder fee
+     * @param hoeveelheid hoeveel er gekockt moet worden
      * @return UUID komt terug als het goed gaat
      * @throws java.lang.Exception error afvang systeem
      */
-    public String setOrder(String baseCoin, String marktCoin, double prijs, double hoebeelheid, String type) throws Exception;
+    public String setOrder(String type, String baseCoin, String marktCoin, double prijs, double hoeveelheid) throws Exception;
 
     /**
      * Vraag de orders op die uitstaan bij de exchange
@@ -52,9 +57,11 @@ public interface exchangeInterface {
      * Cancel order
      *
      * @param uuid order id
+     * @param baseCoin basis coin
+     * @param marktCoin markt currency
      * @return order succusvol is
      */
-    public boolean cancelOrder(String uuid);
+    public boolean cancelOrder(String uuid, String baseCoin, String marktCoin);
 
     /**
      * Krijg de balance. Positie [0] is balance. Positie [1] available. Positie [2] pending balance
