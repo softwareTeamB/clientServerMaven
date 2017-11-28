@@ -7,7 +7,7 @@ import java.util.Scanner;
  *
  * @author michel
  */
-public class inputf {
+public class mainTerminal {
 
     //Het object scanner
     private Scanner sc;
@@ -15,7 +15,7 @@ public class inputf {
     /**
      * Construcor
      */
-    public inputf() {
+    public mainTerminal() {
 
         //maak de scanner aan
         sc = new Scanner(System.in);
@@ -26,7 +26,7 @@ public class inputf {
      */
     public void mainKlasse() {
 
-        //het object inputf
+        //het object mainTerminal
         Object inputObject = sc.next();
 
         switch (inputObject.toString()) {
