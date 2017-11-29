@@ -17,11 +17,10 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import mysql.Mysql;
 import privateRouter.BalanceSaverV2;
-import privateRouter.DataGetter;
 import privateRouter.Deposit;
 import privateRouter.Poloniex;
 import privateRouter.packageApi.BittrexProtocall;
-import terminal.inputf;
+import terminal.mainTerminal;
 import tradeEngine.MainEngine;
 import updater.DatabaseUpdater;
 
@@ -74,7 +73,7 @@ public class ClientServer {
         //InstallerV2 iv2 = new InstallerV2();
         //iv2.main();
         // hier wodt de terminal input aangemaakt en opgestart in een apart thread
-        inputf i = new inputf();
+        mainTerminal i = new mainTerminal();
         Thread thread = new Thread() {
             @Override
             public void run() {
@@ -121,21 +120,12 @@ public class ClientServer {
         bV2.balance();
 
         //order engine
-        MainEngine mainEngine = new MainEngine();
+        /*MainEngine mainEngine = new MainEngine();
         try {
             mainEngine.loadOrderSettings("bla", 2);
         } catch (SQLException ex) {
             Logger.getLogger(ClientServer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-
-        DataGetter dataGetter = new DataGetter();
-        try {
-            dataGetter.getBalance("btc", "ltc", "bittrex");
-        } catch (SQLException ex) {
-            ConsoleColor.err("" + ex);
-        } catch (Exception ex) {
-            ConsoleColor.err("" + ex);
-        }
+        }*/
         
         //kijk of config folder bestaat
         String bestandLocatie = "config/";
