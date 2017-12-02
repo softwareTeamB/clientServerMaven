@@ -104,8 +104,14 @@ public class MainEngine {
             //roep de methoden op die de order plaats en krijgt vervolgens de uuid terug
             String uuid = setOrder(exchangeId, prijs, buyRoom, baseCoin, marktCoin, "buy");
 
-            //zet de order in het database
-            insertUuid(exchangeId, uuid, "buy", baseCoin, marktCoin, prijs, buyRoom);
+            //kijk het het succesvol is gelukt
+            boolean orderSetSuccesVol = succesVol(exchangeId, uuid);
+            if (orderSetSuccesVol) {
+                
+                //zet de order in het database
+                insertUuid(exchangeId, uuid, "buy", baseCoin, marktCoin, prijs, buyRoom);
+            }
+
         }
 
         //vraag de data op uit de sql stament
@@ -145,19 +151,18 @@ public class MainEngine {
             //maak de markt naam
             String marktNaam = baseCoin + verbindingsTeken + marktCoin;
 
-            //kijk welke type het is
-            if ("buy".equals(type)) {
-
-                //bittrex set order stament
-                orderNummer = ClientServer.bittrexProtocall.buyLimitv2(marktNaam, ammount, prijs);
-
-            } else if ("sell".equals(type)) {
-
-                //bittrex set order stament
-                orderNummer = ClientServer.bittrexProtocall.sellLimitv2(marktNaam, ammount, prijs);
-
-            } else {
-                ConsoleColor.warn("Het order type wordt niet herkend. Dit is de order type: " + type);
+            switch (type) {
+                case "buy":
+                    //bittrex set order stament
+                    orderNummer = ClientServer.bittrexProtocall.buyLimitv2(marktNaam, ammount, prijs);
+                    break;
+                case "sell":
+                    //bittrex set order stament
+                    orderNummer = ClientServer.bittrexProtocall.sellLimitv2(marktNaam, ammount, prijs);
+                    break;
+                default:
+                    ConsoleColor.warn("Het order type wordt niet herkend. Dit is de order type: " + type);
+                    break;
             }
         }
 
@@ -342,5 +347,42 @@ public class MainEngine {
                 + "VALUES(" + exchangeId + ", '" + uuid + "', '" + type + "', '" + baseCoin + "', '" + marktCoin + "', "
                 + "" + prijs + ", " + hoeveelheid + ")";
         mysql.mysqlExecute(sqlStament);
+    }
+
+    /**
+     *
+     * @param exchangeId exchange db nummer
+     * @param uuid uuid van de exchange
+     * @return of de order succesvol is werkt
+     */
+    private boolean succesVol(int exchangeId, String uuid) {
+
+        //maak de string naar een jsonobject
+        JSONObject object = new JSONObject(uuid);
+
+        //kijk welke exchange het is
+        if (exchangeId == ClientServer.exchangeIdJSONObject.getInt("bittrex")) {
+
+            //haal uit het object of het succesvol is
+            boolean succesVol = object.getBoolean("success");
+
+            //if stament
+            if (succesVol) {
+
+                //return dat het goed gelukt is
+                return true;
+            } else {
+
+                //er is een probleem. Print de error uit
+                ConsoleColor.err("Er is een probleem bij order te plaatsen. Het probleem doet zich voor bij bittrex. "
+                        + "Dit is de error: " + object.getString("message"));
+
+                //return dat het mislukt is
+                return false;
+            }
+
+        } else {
+            return false;
+        }
     }
 }
