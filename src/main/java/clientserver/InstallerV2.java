@@ -71,6 +71,78 @@ public class InstallerV2 {
     }
 
     /**
+     *
+     * @throws IOException
+     */
+    private void configSetUp() throws IOException {
+
+        boolean change = false;
+
+        //file naam
+        String fileNaam = "config";
+
+        //mail account
+        String[] keyLijst = {
+            "reloadMarktDataSave", "checkMarktLijst",
+            "reloadTijd", "loadInterface"
+        };
+
+        //laat de prop file
+        Properties file = LoadPropFile.loadPropFile(fileNaam);
+
+        //start de forloop
+        for (int i = 0; i < keyLijst.length; i++) {
+            String keyNaam = keyLijst[i];
+
+            //loop door de keyLijst heen
+            if (file.getProperty(keyNaam) == null) {
+
+                //input object van de scanner
+                Object scannerInput = null;
+
+                //switch stament
+                switch (keyNaam) {
+                    case "reloadMarktDataSave":
+                        ConsoleColor.out("reloadMarktDataSave true of false");
+                        scannerInput = SC.next();
+
+                        //voeg de input toe aan het bestand
+                        file.setProperty(keyNaam, scannerInput.toString());
+                        break;
+                    case "reloadTijd":
+                        ConsoleColor.out("Vul de reload tijd in. Tijd in millisiconde");
+                        scannerInput = SC.next();
+
+                        //voeg de input toe aan het bestand
+                        file.setProperty(keyNaam, scannerInput.toString());
+                        break;
+                    case "checkMarktLijst":
+                        ConsoleColor.out("Marktlijst bij opstarten check? "
+                                + "True of false");
+                        scannerInput = SC.next();
+
+                        //voeg de input toe aan het bestand
+                        file.setProperty(keyNaam, scannerInput.toString());
+                        break;
+                    case "loadInterface":
+                        ConsoleColor.out("Laat interface? True of false");
+                        scannerInput = SC.next();
+
+                        //voeg de input toe aan het bestand
+                        file.setProperty(keyNaam, scannerInput.toString());
+                        break;
+                    default:
+                        ConsoleColor.err("Er is geen optie bekend bij configSetUp voor het invullen van de onberekende key."
+                                + " De key is: " + keyNaam);
+                        break;
+
+                }
+            }
+        }
+
+    }
+
+    /**
      * Mysql set up
      */
     private void mysqlSetUp() throws IOException {
@@ -320,7 +392,7 @@ public class InstallerV2 {
 
             //null check
             if (propertyCheck == true) {
-                
+
                 change = true;
 
                 //geef in de terminal aan de de key leeg is
