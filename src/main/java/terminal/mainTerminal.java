@@ -2,6 +2,9 @@ package terminal;
 
 import global.ConsoleColor;
 import java.util.Scanner;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import mysql.Mysql;
 
 /**
  *
@@ -11,6 +14,9 @@ public class mainTerminal {
 
     //Het object scanner
     private Scanner sc;
+
+    //maak mysql aan
+    Mysql mysql = new Mysql();
 
     /**
      * Construcor
@@ -42,8 +48,8 @@ public class mainTerminal {
                 //sluit de applicatie af
                 sluitApplicatie();
                 break;
-                
-                //als het 0 us
+
+            //als het 0 us
             case "0":
                 //roep de wijzigPropertiesFile methoden op
                 wijzigPropertiesFile();
@@ -60,8 +66,7 @@ public class mainTerminal {
                 balance();
                 break;
             case "3":
-                
-                
+
                 break;
             default:
                 ConsoleColor.out("U heeft geen geldige input gegevens. Typ help in om alle commands te zien.");
@@ -81,18 +86,16 @@ public class mainTerminal {
         String format = "%-30s%s%n";
         System.out.printf(format, "Opties", "code");
         System.out.print("\n");
-        System.out.printf(format, "Wijzig properties bestanden" , 0);
+        System.out.printf(format, "Wijzig properties bestanden", 0);
         System.out.printf(format, "Wijzig apiKeys", 1);
         System.out.printf(format, "Laat balance zien", 2);
         System.out.printf(format, "orders", 3);
-        
-        
-        
+
         System.out.printf(format, "Sluiten het systeem af:", "exit");
     }
-    
-    private void orderSetting(){
-    
+
+    private void orderSetting() {
+
     }
 
     /**
@@ -101,8 +104,8 @@ public class mainTerminal {
     private void exchangeApiKeys() {
         ConsoleColor.err("De exchangeApiKeys moeten nog gebouwd worden.");
     }
-    
-    private void wijzigPropertiesFile(){
+
+    private void wijzigPropertiesFile() {
         ConsoleColor.err("Om de properties bestanden aan de passen moet nog gebouwd worden");
     }
 
@@ -120,15 +123,55 @@ public class mainTerminal {
      */
     private void balance() {
 
-        ConsoleColor.err("De balance laten zien moeten nog gebouwd worden.");
+        try {
+            //boolean of er data in mysql staat
+            boolean dataCheck = false;
+
+            //vraag alle balance op
+            String sqlStament = "SELECT "
+                    + "exchangeLijst.handelsplaats, vieuwbalance.cointag, vieuwbalance.balance, "
+                    + "vieuwbalance.available, vieuwbalance.pending "
+                    + "FROM vieuwbalance "
+                    + "INNER JOIN exchangeLijst ON vieuwbalance.exchangeId = exchangeLijst.idExchangeLijst "
+                    + "WHERE vieuwbalance.balance  != 0 AND  vieuwbalance.available  != 0";
+
+            //vraag alle balance data op waar het balance niet 0 is
+            ResultSet rs = mysql.mysqlSelect(sqlStament);
+
+            //print het begin van de melding
+            String format = "%-10s %-10s %-30s %-30s %-30s\n";
+            System.out.printf(format, "exchange", "cointag", "balance", "available", "pending");
+            System.out.print("\n");
+
+            //while loop door de data heen
+            while (rs.next()) {
+
+                //kijk of dataCheck op true staat. Zo niet zet hem op true
+                if (!dataCheck) {
+
+                    //Zet dataCheck op true
+                    dataCheck = true;
+                }
+
+                //vraag double data
+                String exchangeNaam = rs.getString("handelsplaats");
+                String cointag = rs.getString("cointag");
+                double balance = rs.getDouble("balance");
+                double available = rs.getDouble("available");
+                double pending = rs.getDouble("pending");
+
+                System.out.printf(format, exchangeNaam, cointag, balance, available, pending);
+
+            }
+        } catch (SQLException ex) {
+            ConsoleColor.err("Er is een probleem bij terminal print balance. Dit is de error: " + ex);
+        }
     }
-    
+
     /**
      * orderSettings
      */
-    private void orderSettings(){
-        
-        
-        
+    private void orderSettings() {
+
     }
 }

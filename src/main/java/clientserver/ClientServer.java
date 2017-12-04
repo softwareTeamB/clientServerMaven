@@ -1,10 +1,12 @@
 package clientserver;
 
+import javafx.geometry.Insets;
 import JSON.JSONException;
 import JSON.JSONObject;
 import frameWork.ArrayListDriver;
 import global.ConsoleColor;
 import global.FileSystem;
+import global.LoadPropFile;
 import http.Http;
 import http.HttpPost;
 import java.io.IOException;
@@ -13,26 +15,41 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Properties;
+import javafx.application.Application;
+import static javafx.application.Application.launch;
+import javafx.geometry.Pos;
+
+import javafx.scene.control.Label;
+import javafx.scene.Scene;
+import javafx.scene.control.TextField;
+import javafx.scene.layout.GridPane;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import mysql.Mysql;
 import privateRouter.BalanceSaverV2;
 import privateRouter.Deposit;
+import privateRouter.OrdersGetter;
 import privateRouter.Poloniex;
 import privateRouter.packageApi.BittrexProtocall;
 import terminal.mainTerminal;
-import tradeEngine.MainEngine;
 import updater.DatabaseUpdater;
 
+
+
 /**
- * Dit is het programma wat er voor zorgt dat de client kant up to data kan blijven
+ * Dit is het programma wat er voor zorgt dat de client kant up to data kan
+ * blijven
  *
  * @author michel
  */
-public class ClientServer {
+public class ClientServer extends Application{
 
     /**
-     * JavaDoc voor de nodejsUrl. Dit is een url om het nodejs systeem met de exchange te communiseren
+     * JavaDoc voor de nodejsUrl. Dit is een url om het nodejs systeem met de
+     * exchange te communiseren
      */
     public static final String NODE_JS_URL = "http://127.0.0.1:9091";
 
@@ -64,11 +81,23 @@ public class ClientServer {
     public static JSONObject exchangeFeeJSONObject = new JSONObject();
     public static JSONObject exchangeVerbindingsTeken = new JSONObject();
 
+    public static Properties config;
+
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        
+           launch(args);
 
+        try {
+            config = LoadPropFile.loadPropFile("config");
+        } catch (IOException ex) {
+            ConsoleColor.err(ex);
+            System.exit(0);
+        }
+
+        //boolean 
         //maak het object aan voor de installerV2
         //InstallerV2 iv2 = new InstallerV2();
         //iv2.main();
@@ -100,8 +129,10 @@ public class ClientServer {
             Logger.getLogger(ClientServer.class.getName()).log(Level.SEVERE, null, ex);
         }*/
         /**
-         * Methoden werkt try { poloniex.setOrder("buy", "USDT", "XRP", 0.1, 100); } catch (Exception ex) {
-         * Logger.getLogger(ClientServer.class.getName()).log(Level.SEVERE, null, ex); } / /* Methoden werkt
+         * Methoden werkt try { poloniex.setOrder("buy", "USDT", "XRP", 0.1,
+         * 100); } catch (Exception ex) {
+         * Logger.getLogger(ClientServer.class.getName()).log(Level.SEVERE,
+         * null, ex); } / /* Methoden werkt
          * poloniex.cancelOrder("64081504477","USDT" ,"XRP");
          */
         //http object
@@ -114,6 +145,9 @@ public class ClientServer {
 
         Deposit deposit = new Deposit();
         deposit.mainDeposit();
+
+        OrdersGetter og = new OrdersGetter();
+        og.updateOrders();
 
         //blancee engine
         BalanceSaverV2 bV2 = new BalanceSaverV2();
@@ -322,5 +356,37 @@ public class ClientServer {
             ConsoleColor.out("MysqlExchangeCheck is doorlopen.");
             ConsoleColor.out(exchangeIdJSONObject);
         }
+    }
+
+    @Override
+    public void start(Stage primaryStage) throws Exception {
+        
+         GridPane grid = new GridPane();
+        grid.setAlignment(Pos.CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(25, 25, 25, 25));
+
+
+        //Welkom + Letter type
+        Text scenetitle = new Text("Welcome");
+        scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
+        grid.add(scenetitle, 0, 0, 2, 1);
+
+        //Username text
+        Label userNameLabel = new Label("Username:");
+        grid.add(userNameLabel, 0, 1);
+
+        //Text veld na Username
+        TextField userTextField = new TextField();
+        grid.add(userTextField, 1, 1);
+        
+            primaryStage.setTitle("Corendon Bagage");
+        Scene scene = new Scene(grid, 1200, 920);
+        primaryStage.setScene(scene);
+        scene.getStylesheets().add("global/Style2.css");
+        primaryStage.show();
+    
+    
     }
 }
