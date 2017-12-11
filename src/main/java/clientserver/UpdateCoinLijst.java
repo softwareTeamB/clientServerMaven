@@ -35,7 +35,7 @@ public class UpdateCoinLijst {
         JSONObject object = new JSONObject(httpReponse);
 
         //kijk of het is gelukt
-        boolean succes = ErrorMessageResponse.cexIo(object);
+        boolean succes = ErrorMessageResponse.cexIoCheck(object);
 
         //als er een error is stop er dan mee
         if (!succes) {
