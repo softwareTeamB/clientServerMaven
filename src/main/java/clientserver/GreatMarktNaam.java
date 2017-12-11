@@ -5,7 +5,7 @@ package clientserver;
  *
  * @author michel
  */
-public class greatMarktNaam {
+public class GreatMarktNaam {
 
     /**
      * Methoden die de marktnaam return
@@ -13,7 +13,7 @@ public class greatMarktNaam {
      * @param baseCoin basis coin
      * @param marktCoin marktNaamCoin
      * @param exchangeIdString exchangeId in
-     * @return
+     * @return marktnaam
      */
     public String getMarktNaam(String baseCoin, String marktCoin,
             String exchangeIdString) {
