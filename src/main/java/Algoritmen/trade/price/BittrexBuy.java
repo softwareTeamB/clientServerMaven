@@ -32,6 +32,7 @@ public final class BittrexBuy extends MainPriceMethoden {
      * @param baseCoin de basiscoin
      * @param marktCoin de marktcoin
      * @param typePrijs of het usdt of btc is
+     * @param orderType of het een buy of sell
      */
     public BittrexBuy(double MAX_PRIJS,
             int EXCHANGE_ID,
