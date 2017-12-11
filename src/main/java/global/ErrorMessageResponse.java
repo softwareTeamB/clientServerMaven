@@ -15,7 +15,7 @@ public class ErrorMessageResponse {
      * @param object
      * @return
      */
-    public static boolean bittrex(JSONObject object) {
+    public static boolean bittrexCheck(JSONObject object) {
 
         //vraag op het de request succesvol was
         boolean succes = object.getBoolean("success");
@@ -50,7 +50,7 @@ public class ErrorMessageResponse {
      * @param object
      * @return
      */
-    public static boolean cexIo(JSONObject object) {
+    public static boolean cexIoCheck(JSONObject object) {
 
         //loop door alles keys heen
         Iterator<String> keys = object.keys();
