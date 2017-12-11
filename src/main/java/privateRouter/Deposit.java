@@ -45,7 +45,7 @@ public class Deposit {
         JSONObject bittrexResponseObject = new JSONObject(bittrexReponse);
 
         //kijk of alles is gelukt
-        if (!ErrorMessageResponse.bittrex(bittrexResponseObject)) {
+        if (!ErrorMessageResponse.bittrexCheck(bittrexResponseObject)) {
             //stop de methoden
             return;
         }

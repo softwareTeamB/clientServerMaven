@@ -95,7 +95,7 @@ public class BalanceSaverV2 {
         JSONObject bittrexReponseObject = new JSONObject(bittrexReponse);
 
         //kijk of de reponse geldig is
-        if (!ErrorMessageResponse.bittrex(bittrexReponseObject)) {
+        if (!ErrorMessageResponse.bittrexCheck(bittrexReponseObject)) {
             //zorg er voor dat het porgramma niet meer verder gaat
             return;
         };
