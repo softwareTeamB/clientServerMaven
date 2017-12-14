@@ -5,7 +5,6 @@ import java.util.Scanner;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import mysql.Mysql;
-import mysql.MysqlServer;
 
 /**
  *
@@ -71,10 +70,17 @@ public class mainTerminal {
                 break;
             case "Build_markt_again":
             case "4":
+                try {
+                    buildMarktData();
+                } catch (SQLException ex) {
+                    ConsoleColor.err("Er is een error opgetreden bij de "
+                            + "clean build van de data.");
+                }
 
                 break;
             default:
-                ConsoleColor.out("U heeft geen geldige input gegevens. Typ help in om alle commands te zien.");
+                ConsoleColor.out("U heeft geen geldige input gegevens. Typ "
+                        + "help in om alle commands te zien.");
         }
 
         //roep de main klasse opnieuw op
@@ -115,12 +121,15 @@ public class mainTerminal {
         String[] tableLijst = {"marktnaam", "marktupdate", "marktlijsten",
             "orderSetting", "orderSettingBuy", "orderSettingSell"};
         for (int i = 0; i < tableLijst.length; i++) {
-            
+
             //verwijdere alle rows
-            mysql.mysqlExecute("DELETE FROM "+ tableLijst[i]);
+            mysql.mysqlExecute("DELETE FROM " + tableLijst[i]);
         }
-        
-        
+
+        //maak object aan
+        MysqlRowUpdate mRU = new MysqlRowUpdate();
+        mRU.run();
+
     }
 
     /**
