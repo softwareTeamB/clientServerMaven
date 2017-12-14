@@ -17,6 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 import javafx.application.Application;
+import static javafx.application.Application.launch;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.Scene;
@@ -89,12 +90,55 @@ public class ClientServer extends Application {
     public static Properties config;
 
     /**
-     * @param args the command line arguments
+     * De main methoden
+     *
+     * @param args command-line
      */
     public static void main(String[] args) {
 
+        //de nieiwe thread
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                backgroundSystem(args);
+            }
+        };
+
+        ConsoleColor.out("test");
+        thread.start();
+
+    }
+
+    /**
+     * Methoden om de interface op te starten
+     *
+     * @param args command-line
+     */
+    private static void interfaceMethoden(String[] args) {
+
+        //vraag het properties bestand op
+        String loadInterfaceString = config.getProperty("loadInterface");
+
+        //als het if stament true is dat de interface gestart word
+        if ("true".equals(loadInterfaceString)) {
+
+            //start de applicatie methoden op
+            launch(args);
+        } else {
+            ConsoleColor.warn("De interface wordt niet geladen");
+        }
+    }
+
+    /**
+     * Alle methoden die de background van het systeem dienen
+     *
+     * @param args command-line
+     */
+    private static void backgroundSystem(String[] args) {
+
         try {
             config = LoadPropFile.loadPropFile("config");
+            ConsoleColor.out(config);
         } catch (IOException ex) {
             ConsoleColor.err(ex);
             System.exit(0);
@@ -113,11 +157,12 @@ public class ClientServer extends Application {
             }
         };
 
+        ConsoleColor.out("test");
         thread.start();
 
         //mysqlCheck
         mysqlExchangeCheck();
-
+        ConsoleColor.out("test");
         //maak de poloniex private router aan
         poloniex = new Poloniex();
 
@@ -319,6 +364,32 @@ public class ClientServer extends Application {
         }
     }
 
+    /**
+     * Methoden die de marktnaam return
+     *
+     * @param baseCoin basis coin
+     * @param marktCoin marktNaamCoin
+     * @param exchangeIdString exchangeId in
+     * @return marktnaam
+     */
+    public static String getMarktNaam(String baseCoin, String marktCoin,
+            String exchangeIdString) {
+
+        //roep de methoden op die de marktnaam in elkaar zet
+        return greatMarktNaam.getMarktNaam(baseCoin, marktCoin, exchangeIdString);
+    }
+
+    /**
+     * Getter voor de bittrex url
+     *
+     * @return bittrex url
+     */
+    public static String getBittrexUrl() {
+
+        //return variable
+        return bittrexUrl;
+    }
+
     @Override
     public void start(Stage primaryStage) throws Exception {
 
@@ -347,30 +418,5 @@ public class ClientServer extends Application {
         scene.getStylesheets().add("global/Style2.css");
         primaryStage.show();
 
-    }
-
-    /**
-     * Methoden die de marktnaam return
-     *
-     * @param baseCoin basis coin
-     * @param marktCoin marktNaamCoin
-     * @param exchangeIdString exchangeId in
-     * @return marktnaam
-     */
-    public static String getMarktNaam(String baseCoin, String marktCoin,
-            String exchangeIdString) {
-
-        //roep de methoden op die de marktnaam in elkaar zet
-        return greatMarktNaam.getMarktNaam(baseCoin, marktCoin, exchangeIdString);
-    }
-
-    /**
-     * Getter voor de bittrex url
-     * @return bittrex url
-     */
-    public static String getBittrexUrl() {
-        
-        //return variable
-        return bittrexUrl;
     }
 }
