@@ -104,6 +104,15 @@ public class mainTerminal {
         System.out.printf(format, "Build_markt_again", 4);
 
         System.out.printf(format, "Sluiten het systeem af:", "exit");
+        
+        /*ConsoleColor.outTable(format, "Opties", "code");
+        //System.out.print("\n");
+        ConsoleColor.outTable(format, "Wijzig properties bestanden", 0);
+        ConsoleColor.outTable(format, "Wijzig apiKeys", 1);
+        ConsoleColor.outTable(format, "Laat balance zien", 2);
+        ConsoleColor.outTable(format, "orders", 3);
+        ConsoleColor.outTable(format, "Build_markt_again", 4);
+        ConsoleColor.outTable(format, "Sluiten het systeem af:", "exit");*/
     }
 
     private void orderSetting() {
