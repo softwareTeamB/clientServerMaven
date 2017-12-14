@@ -17,9 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
 import javafx.application.Application;
-import static javafx.application.Application.launch;
 import javafx.geometry.Pos;
-
 import javafx.scene.control.Label;
 import javafx.scene.Scene;
 import javafx.scene.control.TextField;
@@ -29,6 +27,7 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import mysql.Mysql;
+import mysql.MysqlServer;
 import privateRouter.BalanceSaverV2;
 import privateRouter.Deposit;
 import privateRouter.OrdersGetter;
@@ -37,21 +36,23 @@ import privateRouter.packageApi.BittrexProtocall;
 import terminal.mainTerminal;
 import updater.DatabaseUpdater;
 
-
-
 /**
  * Dit is het programma wat er voor zorgt dat de client kant up to data kan
  * blijven
  *
  * @author michel
  */
-public class ClientServer extends Application{
+public class ClientServer extends Application {
 
     /**
      * JavaDoc voor de nodejsUrl. Dit is een url om het nodejs systeem met de
      * exchange te communiseren
      */
     public static final String NODE_JS_URL = "http://127.0.0.1:9091";
+
+    //mysql
+    public static Mysql mysql = new Mysql();
+    public static MysqlServer mysqlServer = new MysqlServer();
 
     private static String url = "127.0.0.1:7090";
     private static String versieCheck = "/versieCheck.txt";
@@ -69,9 +70,13 @@ public class ClientServer extends Application{
     //private routers poloniex
     public static Poloniex poloniex;
 
+    //klassen voor die belangirjk zijn
+    private static GreatMarktNaam greatMarktNaam = new GreatMarktNaam();
+
     /**
      * Basis url van belangrijke websites
      */
+    private static final String bittrexUrl = "https://bittrex.com/api/v1.1";
     public static String cexIo = "https://cex.io/api";
     public static String coinmarketcapUrl = "https://api.coinmarketcap.com/v1";
     public static String clientUrlServer = "http://127.0.0.1:9091";
@@ -87,8 +92,6 @@ public class ClientServer extends Application{
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        
-           launch(args);
 
         try {
             config = LoadPropFile.loadPropFile("config");
@@ -160,7 +163,6 @@ public class ClientServer extends Application{
         } catch (SQLException ex) {
             Logger.getLogger(ClientServer.class.getName()).log(Level.SEVERE, null, ex);
         }*/
-        
         //kijk of config folder bestaat
         String bestandLocatie = "config/";
         Path path = Paths.get(bestandLocatie);
@@ -185,47 +187,6 @@ public class ClientServer extends Application{
         }*/
     }
 
-    /**
-     * VersieChcek methoden is om na te gaan of het database nog up to data is
-     */
-    /*private static void versieCheck() {
-
-        //Http http = new Http();
-        //kijk of versieCheck.txt bestaat
-        String naamVersieCheck = "versieCheck.txt";
-        String versieCheckLocal;
-        File bestandCheck = new File("config/versieCheck.txt");
-
-        //als het bestand niet bestaat
-        if (!bestandCheck.exists()) {
-
-            //run database updater
-            dataBaseUpdater.databaseUpdater();
-
-            //run de methoden op de nieuwe versie check op te slaan
-            //versieCheckUpdate();
-        } else {
-
-            //vraag aan de server op welke versie er bij de server staat
-            String versieServer = http.GetHttp(url + versieCheck);
-
-            //vraag de versieCheck op van de server
-            //lees de bestand inhoud
-            try {
-                versieCheckLocal = fileSystem.readFile(naamVersieCheck);
-            } catch (IOException ex) {
-                System.err.println("Er is een rror opgetreden bij het lezen van de file " + naamVersieCheck);
-                return;
-            }
-
-            //if stament
-            if (!versieCheckLocal.equals(versieServer)) {
-                //roep de klasse op die alle data updaten
-                dataBaseUpdater.databaseUpdater();
-            }
-
-        }
-    }*/
     /**
      * methoden die na kijkt op handelsplaats goed werkt
      */
@@ -360,13 +321,12 @@ public class ClientServer extends Application{
 
     @Override
     public void start(Stage primaryStage) throws Exception {
-        
-         GridPane grid = new GridPane();
+
+        GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
         grid.setHgap(10);
         grid.setVgap(10);
         grid.setPadding(new Insets(25, 25, 25, 25));
-
 
         //Welkom + Letter type
         Text scenetitle = new Text("Welcome");
@@ -380,13 +340,37 @@ public class ClientServer extends Application{
         //Text veld na Username
         TextField userTextField = new TextField();
         grid.add(userTextField, 1, 1);
-        
-            primaryStage.setTitle("Corendon Bagage");
+
+        primaryStage.setTitle("Corendon Bagage");
         Scene scene = new Scene(grid, 1200, 920);
         primaryStage.setScene(scene);
         scene.getStylesheets().add("global/Style2.css");
         primaryStage.show();
-    
-    
+
+    }
+
+    /**
+     * Methoden die de marktnaam return
+     *
+     * @param baseCoin basis coin
+     * @param marktCoin marktNaamCoin
+     * @param exchangeIdString exchangeId in
+     * @return marktnaam
+     */
+    public static String getMarktNaam(String baseCoin, String marktCoin,
+            String exchangeIdString) {
+
+        //roep de methoden op die de marktnaam in elkaar zet
+        return greatMarktNaam.getMarktNaam(baseCoin, marktCoin, exchangeIdString);
+    }
+
+    /**
+     * Getter voor de bittrex url
+     * @return bittrex url
+     */
+    public static String getBittrexUrl() {
+        
+        //return variable
+        return bittrexUrl;
     }
 }
