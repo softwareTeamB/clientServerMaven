@@ -47,7 +47,9 @@ public class MailServer {
         } catch (IOException ex) {
             ConsoleColor.err("Er is een error in de mailServer constructor. Dit is de error " + ex
                     + ". Het systeem wordt afgesloten.");
-            System.exit(0);
+            
+            //update send mail update
+            sendMail = false;
         }
 
     }
@@ -111,6 +113,9 @@ public class MailServer {
             
             //zet send boolean op false
             sendMail = false;
+            
+            //consolecolor
+            ConsoleColor.warn("Er is geen mogelijkheid om een mail te sturen");
         }
     }
 
