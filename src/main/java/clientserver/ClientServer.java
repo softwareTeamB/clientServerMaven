@@ -50,7 +50,7 @@ public class ClientServer extends Application {
      * exchange te communiseren
      */
     public static final String NODE_JS_URL = "http://127.0.0.1:9091";
-
+        
     //mysql
     public static Mysql mysql = new Mysql();
     public static MysqlServer mysqlServer = new MysqlServer();

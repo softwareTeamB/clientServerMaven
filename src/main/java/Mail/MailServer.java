@@ -21,17 +21,29 @@ import javax.mail.*;
  */
 public class MailServer {
 
+    /*
+     * Boolean mailler. Boolean is standaart op false gezet
+     */
+    private static boolean sendMail = false;
+
     private static Properties mailServerProperties;
     private static Session getMailSession;
     private static MimeMessage generateMailMessage;
     private Properties loadConfigProp;
     private Properties mailProperties;
-    
-    
+
+    /**
+     * Constructor
+     */
     public MailServer() {
         try {
             this.loadConfigProp = LoadPropFile.loadPropFile("config");
             this.mailProperties = LoadPropFile.loadPropFile("mailAccount");
+            
+            //update boolean
+            sendMail = true;
+            
+            
         } catch (IOException ex) {
             ConsoleColor.err("Er is een error in de mailServer constructor. Dit is de error " + ex
                     + ". Het systeem wordt afgesloten.");
@@ -49,7 +61,15 @@ public class MailServer {
      * @throws MessagingException bericht error
      */
     public void generateAndSendEmail(String mailAddress, String emailBody) throws AddressException, MessagingException {
-
+        
+        //kijk of het mogelijk is om een mail te sturen
+        if(!sendMail){
+            ConsoleColor.warn("Het is niet mogelijk om een mail te sturen.");
+        
+            //stop de methoden
+            return;
+        }
+        
         Properties props = new Properties();
         props.put("mail.smtp.host", "smtp.gmail.com");
         props.put("mail.smtp.socketFactory.port", "465");
@@ -66,7 +86,7 @@ public class MailServer {
                         mailProperties.getProperty("googlePassword"));
             }
         });
-        
+
         try {
             // Create a default MimeMessage object.
             MimeMessage message = new MimeMessage(session);
@@ -88,6 +108,9 @@ public class MailServer {
             ConsoleColor.out("Sent message successfully....");
         } catch (MessagingException mex) {
             mex.printStackTrace();
+            
+            //zet send boolean op false
+            sendMail = false;
         }
     }
 
