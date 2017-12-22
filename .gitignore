@@ -25,4 +25,5 @@ target/
 config/
 *.properties
 /NodeJsApplication/node_modules/
+/nbproject/
 *.class
