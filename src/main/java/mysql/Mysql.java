@@ -10,6 +10,7 @@ import java.sql.Statement;
 
 /**
  * Klasse die voor de verbinding met het database zorgt
+ *
  * @author michel
  */
 public class Mysql {
@@ -26,7 +27,8 @@ public class Mysql {
     private Statement stmt;
 
     /**
-     * Constructor waar het properties bestand wordt opgehaald en de connectie wordt gemaakt
+     * Constructor waar het properties bestand wordt opgehaald en de connectie
+     * wordt gemaakt
      */
     public Mysql() {
         try {
@@ -34,9 +36,9 @@ public class Mysql {
             conn = DriverManager.getConnection(CONN_STRING, USERNAME, PASSWORD);
             this.stmt = (Statement) conn.createStatement();
         } catch (SQLException ex) {
-            
+
             //console color
-            ConsoleColor.err("Er is een error opgetreden met het aanmaken van connenctie in mysql. Dit is de error: "+ ex
+            ConsoleColor.err("Er is een error opgetreden met het aanmaken van connenctie in mysql. Dit is de error: " + ex
                     + ".\n De applicatie wordt veilig afgesloten.");
             System.exit(0);
         }
@@ -50,7 +52,7 @@ public class Mysql {
      * @throws SQLException als er iets fout gaat
      */
     public ResultSet mysqlSelect(String sqlString) throws SQLException {
-        
+
         //return
         return stmt.executeQuery(sqlString);
     }
@@ -108,9 +110,9 @@ public class Mysql {
      * @throws Exception andere exceptions
      */
     public int mysqlExchangeNummerV2(String exchange) throws SQLException, Exception {
-        
+
         //return
-        ResultSet rs = stmt.executeQuery("select getExchangeNummer('"+exchange+"') AS nummer;");
+        ResultSet rs = stmt.executeQuery("select getExchangeNummer('" + exchange + "') AS nummer;");
         while (rs.next()) {
             return rs.getInt("nummer");
         }
@@ -154,5 +156,27 @@ public class Mysql {
             return rs.getInt("nummer");
         }
         throw new SQLDataException("De database reponse is leeg");
+    }
+
+    /**
+     * Methoden die berekent hoeveel rows er in de resultset zit
+     *
+     * @param rs resultset
+     * @return return de hoeveelheid rows
+     * @throws SQLException mocht er een error voor komen
+     */
+    public int rsSize(ResultSet rs) throws SQLException {
+
+        //return het nummer
+        int nummer = 0;
+
+        while (rs.next()) {
+
+            //nummer++ wordt met 1 verhoogd
+            nummer++;
+        }
+
+        //return het nummer
+        return nummer;
     }
 }

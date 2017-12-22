@@ -165,50 +165,9 @@ public class mainTerminal {
      * Methoden voor de balance
      */
     private void balance() {
-
-        try {
-            //boolean of er data in mysql staat
-            boolean dataCheck = false;
-
-            //vraag alle balance op
-            String sqlStament = "SELECT "
-                    + "exchangeLijst.handelsplaats, vieuwbalance.cointag, vieuwbalance.balance, "
-                    + "vieuwbalance.available, vieuwbalance.pending "
-                    + "FROM vieuwbalance "
-                    + "INNER JOIN exchangeLijst ON vieuwbalance.exchangeId = exchangeLijst.idExchangeLijst "
-                    + "WHERE vieuwbalance.balance  != 0 AND  vieuwbalance.available  != 0";
-
-            //vraag alle balance data op waar het balance niet 0 is
-            ResultSet rs = mysql.mysqlSelect(sqlStament);
-
-            //print het begin van de melding
-            String format = "%-10s %-10s %-30s %-30s %-30s\n";
-            System.out.printf(format, "exchange", "cointag", "balance", "available", "pending");
-            System.out.print("\n");
-
-            //while loop door de data heen
-            while (rs.next()) {
-
-                //kijk of dataCheck op true staat. Zo niet zet hem op true
-                if (!dataCheck) {
-
-                    //Zet dataCheck op true
-                    dataCheck = true;
-                }
-
-                //vraag double data
-                String exchangeNaam = rs.getString("handelsplaats");
-                String cointag = rs.getString("cointag");
-                double balance = rs.getDouble("balance");
-                double available = rs.getDouble("available");
-                double pending = rs.getDouble("pending");
-
-                System.out.printf(format, exchangeNaam, cointag, balance, available, pending);
-
-            }
-        } catch (SQLException ex) {
-            ConsoleColor.err("Er is een probleem bij terminal print balance. Dit is de error: " + ex);
-        }
+        
+        //roep de methoden op die de balance uit print
+        new BalancePrinter();
     }
 
     /**
