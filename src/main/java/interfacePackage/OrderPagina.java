@@ -45,21 +45,19 @@ public class OrderPagina {
         //Text veld na Username
         TextField userTextField = new TextField();
         grid.add(userTextField, 1, 1);
-        
-        
+
         primaryStage.setTitle("Corendon Bagage");
         Scene scene = new Scene(grid, 1200, 920);
-        
+
         //maak zet scene in de primary scene
         primaryStage.setScene(scene);
-        
+
         //vul screen modes
         primaryStage.setFullScreen(InterfaceMain.fullScreen);
-        
+
         scene.getStylesheets().add(InterfaceMain.cssNaam);
-        
+
         primaryStage.show();
 
-    
     }
 }

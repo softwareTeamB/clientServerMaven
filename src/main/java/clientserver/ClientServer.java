@@ -15,6 +15,7 @@ import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
+import java.util.Stack;
 import mysql.Mysql;
 import mysql.MysqlServer;
 import privateRouter.BalanceSaverV2;
@@ -50,7 +51,7 @@ public class ClientServer{
     public static DatabaseUpdater dataBaseUpdater;
     public static ArrayListDriver arrayListDriver;
 
-    public static Http http;
+    public static Http http = new Http();
     public static HttpPost httpPost = new HttpPost();
 
     //maak bittrex private router
@@ -83,7 +84,7 @@ public class ClientServer{
      * @param args command-line
      */
     public static void main(String[] args) {
-
+        
         try {
             config = LoadPropFile.loadPropFile("config");
             ConsoleColor.out(config);
@@ -113,11 +114,12 @@ public class ClientServer{
      * @param args command-line
      */
     private static void backgroundSystem(String[] args) {
-
+        
         //boolean 
         //maak het object aan voor de installerV2
-        //InstallerV2 iv2 = new InstallerV2();
-        //iv2.main();
+        InstallerV2 iv2 = new InstallerV2();
+        iv2.main();
+        
         // hier wodt de terminal input aangemaakt en opgestart in een apart thread
         mainTerminal i = new mainTerminal();
         Thread thread = new Thread() {
@@ -153,12 +155,10 @@ public class ClientServer{
          * null, ex); } / /* Methoden werkt
          * poloniex.cancelOrder("64081504477","USDT" ,"XRP");
          */
-        //http object
-        http = new Http();
 
         //maak alle objecten aan
         fileSystem = new FileSystem();
-        DatabaseUpdater dataBaseUpdater = new DatabaseUpdater();
+        dataBaseUpdater = new DatabaseUpdater();
         arrayListDriver = new ArrayListDriver();
 
         Deposit deposit = new Deposit();
@@ -206,9 +206,6 @@ public class ClientServer{
      * methoden die na kijkt op handelsplaats goed werkt
      */
     private static void mysqlExchangeCheck() {
-
-        //mysql object
-        Mysql mysql = new Mysql();
 
         //string array voor exchangeLijst
         String[] exchangeNaamArray = {"poloniex", "bittrex"};
