@@ -2,7 +2,7 @@ package clientserver;
 
 import static clientserver.ClientServer.config;
 import global.ConsoleColor;
-import interfacePackage.OrderPagina;
+import interfacePackage.OrderBook;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
@@ -39,8 +39,8 @@ public class InterfaceMain extends Application {
     /**
      * Assen van het window
      */
-    public static int xAs = 1200;
-    public static int yAs = 920;
+    private static int xAs = 1200;
+    private static int yAs = 920;
 
     /**
      * Methoden om de interface op te starten
@@ -95,7 +95,7 @@ public class InterfaceMain extends Application {
         btn.setOnAction((ActionEvent e) -> {
 
             //roep de methoden op die de order pagina laat
-            OrderPagina op = new OrderPagina();
+            OrderBook op = new OrderBook();
             op.start(primaryStage);
 
         });
@@ -111,5 +111,22 @@ public class InterfaceMain extends Application {
         scene.getStylesheets().add(cssNaam);
         primaryStage.show();
     }
+    
+    /**
+     * Methoden die een getter maakt voor de x as
+     * @return de x as
+     */
+    public static int getXas(){
+        return xAs;
+    }
+    
+    /**
+     * Methoden die een getter is voor de y as
+     * @return 
+     */
+    public static int getYas(){
+        return yAs;
+    }
+    
 
 }
