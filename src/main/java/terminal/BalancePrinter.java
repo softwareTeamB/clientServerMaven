@@ -30,7 +30,7 @@ public class BalancePrinter {
 
             //kijk hoeveel rows er in de resultset zit
             int nummer = clientserver.ClientServer.mysql.rsSize(rs);
-
+            
             //als het nummer 0 is stop de methoden met een bericht
             if (nummer == 0) {
 
