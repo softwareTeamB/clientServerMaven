@@ -4,6 +4,8 @@ import clientserver.InterfaceMain;
 import global.ConsoleColor;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
@@ -52,11 +54,18 @@ public class OrderBook extends Application {
      * Constructor
      */
     public OrderBook() {
+        
+        try {
+            fillDataObservableList();
+        } catch (SQLException ex) {
+            Logger.getLogger(OrderBook.class.getName()).log(Level.SEVERE, null, ex);
+        }
 
     }
 
     @Override
     public void start(Stage stage) {
+        
         Scene scene = new Scene(new Group());
         stage.setTitle("Table View Sample");
         stage.setWidth(InterfaceMain.getXas());
@@ -136,6 +145,21 @@ public class OrderBook extends Application {
             
             //update boolean
             balanceAvailable = true;
+        }
+        
+        //zet de result zet weer goed
+        rs.beforeFirst();
+        
+        //loop door de result zet heen
+        while (rs.next()) {            
+            
+            //haal de data uit de resultset
+            String exchangeNaam = rs.getString("handelsplaats");
+            String cointag = rs.getString("cointag");
+            String balanceString = ""+rs.getDouble("balance");
+            String availableString = ""+rs.getDouble("available");
+            
+            data.add(new Person(exchangeNaam, cointag, balanceString, availableString));
         }
 
         
