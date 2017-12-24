@@ -11,13 +11,15 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
-import javafx.scene.Group;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
+import javafx.scene.control.MenuBar;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
@@ -26,7 +28,7 @@ import javafx.stage.Stage;
  *
  * @author michel
  */
-public class OrderBook extends Application {
+public class BalanceInterface extends Application {
 
     /**
      * Als er geen balance is dan moet deze op false blijven Hierdoor word er een melding geven dat er geen balance beschikbaar is
@@ -42,74 +44,89 @@ public class OrderBook extends Application {
      * ObserverableList
      */
     private final ObservableList<Person> data
-            = FXCollections.observableArrayList(
-                    new Person("t", "Jacob", "Smith", "jacob.smith@example.com"),
-                    new Person("t", "Isabella", "Johnson", "isabella.johnson@example.com"),
-                    new Person("t", "Ethan", "Williams", "ethan.williams@example.com"),
-                    new Person("t", "Emma", "Jones", "emma.jones@example.com"),
-                    new Person("t", "Michael", "Brown", "michael.brown@example.com")
-            );
+            = FXCollections.observableArrayList();
 
     /**
      * Constructor
      */
-    public OrderBook() {
-        
+    public BalanceInterface() {
+
         try {
             fillDataObservableList();
         } catch (SQLException ex) {
-            Logger.getLogger(OrderBook.class.getName()).log(Level.SEVERE, null, ex);
+            Logger.getLogger(BalanceInterface.class.getName()).log(Level.SEVERE, null, ex);
         }
 
     }
 
     @Override
-    public void start(Stage stage) {
-        
-        Scene scene = new Scene(new Group());
-        stage.setTitle("Table View Sample");
-        stage.setWidth(InterfaceMain.getXas());
-        stage.setHeight(InterfaceMain.getYas());
+    public void start(Stage primaryStage) {
+
+        MenuB menuB = new MenuB();
+        MenuBar menuBar = menuB.createMenuB(primaryStage);
+        BorderPane root = new BorderPane();
+        menuBar.prefWidthProperty().bind(primaryStage.widthProperty());
+        root.setTop(menuBar);
+
+        //maak grid aan
+        GridPane grid = new GridPane();
+        grid.setAlignment(Pos.CENTER);
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(25, 25, 25, 25));
 
         final Label label = new Label("Address Book");
         label.setFont(new Font("Arial", 20));
 
         table.setEditable(true);
 
-        TableColumn firstNameCol = new TableColumn("First Name");
-        firstNameCol.setMinWidth(100);
-        firstNameCol.setCellValueFactory(
+        TableColumn exchangeCol = new TableColumn("exchange");
+        exchangeCol.setMinWidth(300);
+        exchangeCol.setCellValueFactory(
                 new PropertyValueFactory<Person, String>("firstName"));
 
-        TableColumn lastNameCol = new TableColumn("Last Name");
-        lastNameCol.setMinWidth(100);
-        lastNameCol.setCellValueFactory(
+        TableColumn cointagCol = new TableColumn("cointag");
+        cointagCol.setMinWidth(300);
+        cointagCol.setCellValueFactory(
                 new PropertyValueFactory<Person, String>("lastName"));
 
-        TableColumn emailCol = new TableColumn("Email");
-        emailCol.setMinWidth(200);
-        emailCol.setCellValueFactory(
+        TableColumn balanceCol = new TableColumn("balance");
+        balanceCol.setMinWidth(300);
+        balanceCol.setCellValueFactory(
                 new PropertyValueFactory<Person, String>("email")
         );
 
-        TableColumn availableCol = new TableColumn("Email");
-        availableCol.setMinWidth(200);
+        TableColumn availableCol = new TableColumn("available");
+        availableCol.setMinWidth(300);
         availableCol.setCellValueFactory(
                 new PropertyValueFactory<Person, String>("available")
         );
 
         table.setItems(data);
-        table.getColumns().addAll(firstNameCol, lastNameCol, emailCol, availableCol);
+        table.getColumns().addAll(exchangeCol, cointagCol, balanceCol, availableCol);
 
-        final VBox vbox = new VBox();
-        vbox.setSpacing(5);
-        vbox.setPadding(new Insets(10, 0, 0, 10));
-        vbox.getChildren().addAll(label, table);
+        grid.add(table, 0, 0);
 
-        ((Group) scene.getRoot()).getChildren().addAll(vbox);
+        //voeg grid toe aan de root
+        root.setCenter(grid);
 
-        stage.setScene(scene);
-        stage.show();
+        //maak scene aan en voeg de root toe
+        Scene scene = new Scene(root, InterfaceMain.getXas(), InterfaceMain.getYas());
+
+        //css load
+        scene.getStylesheets().add(InterfaceMain.getCss());
+
+        //set title
+        primaryStage.setTitle(InterfaceMain.getTitle());
+
+        //voeg scene toe aan de primary stage
+        primaryStage.setScene(scene);
+
+        //full screen modus
+        primaryStage.setFullScreen(InterfaceMain.getFullScreen());
+
+        primaryStage.show();
+
     }
 
     /**
@@ -138,31 +155,30 @@ public class OrderBook extends Application {
 
             //bericht
             ConsoleColor.out("Er is geen andere data balance dat 0 is");
-        
+
             //stop de methoden
             return;
         } else {
-            
+
             //update boolean
             balanceAvailable = true;
         }
-        
+
         //zet de result zet weer goed
         rs.beforeFirst();
-        
+
         //loop door de result zet heen
-        while (rs.next()) {            
-            
+        while (rs.next()) {
+
             //haal de data uit de resultset
             String exchangeNaam = rs.getString("handelsplaats");
             String cointag = rs.getString("cointag");
-            String balanceString = ""+rs.getDouble("balance");
-            String availableString = ""+rs.getDouble("available");
-            
+            String balanceString = "" + rs.getDouble("balance");
+            String availableString = "" + rs.getDouble("available");
+
             data.add(new Person(exchangeNaam, cointag, balanceString, availableString));
         }
 
-        
     }
 
     /**
@@ -170,48 +186,56 @@ public class OrderBook extends Application {
      */
     public static class Person {
 
-        private final SimpleStringProperty firstName;
-        private final SimpleStringProperty lastName2;
+        private final SimpleStringProperty exchange;
+        private final SimpleStringProperty cointag;
         private final SimpleStringProperty email;
         private final SimpleStringProperty available;
 
-        private Person(String fName, String lName, String email, String avaiableString) {
-            this.firstName = new SimpleStringProperty(fName);
-            this.lastName2 = new SimpleStringProperty(lName);
-            this.email = new SimpleStringProperty(email);
-            this.available = new SimpleStringProperty(avaiableString);
+        /**
+         * Constructor
+         *
+         * @param exchange exchange naam
+         * @param cointag coin tag
+         * @param balance hoeveel balance
+         * @param available beschikbare balance
+         */
+        private Person(String exchange, String cointag, String balance, String available) {
+            this.exchange = new SimpleStringProperty(exchange);
+            this.cointag = new SimpleStringProperty(cointag);
+            this.email = new SimpleStringProperty(balance);
+            this.available = new SimpleStringProperty(available);
         }
 
         public String getFirstName() {
-            return firstName.get();
+            return exchange.get();
         }
 
-        public void setFirstName(String fName) {
-            firstName.set(fName);
+        public void setFirstName(String sExchange) {
+            exchange.set(sExchange);
         }
 
         public String getLastName() {
-            return lastName2.get();
+            return cointag.get();
         }
 
-        public void setLastName(String fName) {
-            lastName2.set(fName);
+        public void setLastName(String sCointag) {
+            cointag.set(sCointag);
         }
 
         public String getEmail() {
             return email.get();
         }
 
-        public void setEmail(String fName) {
-            email.set(fName);
+        public void setEmail(String sBalance) {
+            email.set(sBalance);
         }
 
         public String getAvailable() {
             return available.get();
         }
 
-        public void setAvailable(String avaiableString) {
-            available.set(avaiableString);
+        public void setAvailable(String sAvailable) {
+            available.set(sAvailable);
         }
     }
 
