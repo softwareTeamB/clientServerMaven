@@ -59,6 +59,10 @@ public class BalanceInterface extends Application {
 
     }
 
+    /**
+     * ethoden die de interface scene regeld
+     * @param primaryStage primaryStage
+     */
     @Override
     public void start(Stage primaryStage) {
 
