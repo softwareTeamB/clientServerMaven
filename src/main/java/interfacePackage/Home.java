@@ -60,6 +60,9 @@ public class Home extends Application {
         Button btnOrderBook = new Button("Order Book");
         btnOrderBook.setPrefWidth(150);
         
+        //add on de grid
+        grid.add(btnOrderBook, 0, 0);
+        
         //action
         btnOrderBook.setOnAction((ActionEvent e) -> {
         
