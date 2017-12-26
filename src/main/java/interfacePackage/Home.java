@@ -18,6 +18,12 @@ import javafx.stage.Stage;
  * @author michel_desktop
  */
 public class Home extends Application {
+
+    /**
+     * Abstracten methoden voor de javafx scherm. Dit is de home methoden
+     *
+     * @param primaryStage primary stage
+     */
     @Override
     public void start(Stage primaryStage) {
 
@@ -48,9 +54,19 @@ public class Home extends Application {
             //roep de methoden op die de order pagina laat
             BalanceInterface op = new BalanceInterface();
             op.start(primaryStage);
-
         });
         
+        //krijg orderbook
+        Button btnOrderBook = new Button("Order Book");
+        btnOrderBook.setPrefWidth(150);
+        
+        //action
+        btnOrderBook.setOnAction((ActionEvent e) -> {
+        
+            //maak het object getOrderBook en roep hem op
+            GetOrderBook gOB = new GetOrderBook();
+            gOB.start(primaryStage);
+        });
         
         //voeg grid toe aan de root
         root.setCenter(grid);
@@ -69,7 +85,7 @@ public class Home extends Application {
 
         //full screen modus
         primaryStage.setFullScreen(InterfaceMain.getFullScreen());
-        
+
         primaryStage.show();
     }
 }
