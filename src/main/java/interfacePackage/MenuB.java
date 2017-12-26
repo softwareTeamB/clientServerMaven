@@ -29,7 +29,7 @@ public class MenuB {
     public MenuBar createMenuB(Stage primaryStage) {
 
         MenuBar menuBar = new MenuBar();
-        //Home home = new Home();
+        Home home = new Home();
         Login login = new Login();
         //Profile profiel = new Profile();
 
@@ -46,7 +46,7 @@ public class MenuB {
         //button event handelers
         exit.setOnAction(actionEvent -> Platform.exit());
         homePage.setOnAction((ActionEvent e) -> {
-            //home.start(primaryStage);
+            home.start(primaryStage);
         });
 
         logout.setOnAction((ActionEvent e) -> {
