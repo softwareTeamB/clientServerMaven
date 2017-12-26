@@ -38,12 +38,12 @@ public class BalanceInterface extends Application {
     /**
      * Table vieuw
      */
-    private TableView<Person> table = new TableView<Person>();
+    private TableView<TableClasses> table = new TableView<TableClasses>();
 
     /**
      * ObserverableList
      */
-    private final ObservableList<Person> data
+    private final ObservableList<TableClasses> data
             = FXCollections.observableArrayList();
 
     /**
@@ -87,23 +87,23 @@ public class BalanceInterface extends Application {
         TableColumn exchangeCol = new TableColumn("exchange");
         exchangeCol.setMinWidth(300);
         exchangeCol.setCellValueFactory(
-                new PropertyValueFactory<Person, String>("firstName"));
+                new PropertyValueFactory<TableClasses, String>("firstName"));
 
         TableColumn cointagCol = new TableColumn("cointag");
         cointagCol.setMinWidth(300);
         cointagCol.setCellValueFactory(
-                new PropertyValueFactory<Person, String>("lastName"));
+                new PropertyValueFactory<TableClasses, String>("lastName"));
 
         TableColumn balanceCol = new TableColumn("balance");
         balanceCol.setMinWidth(300);
         balanceCol.setCellValueFactory(
-                new PropertyValueFactory<Person, String>("email")
+                new PropertyValueFactory<TableClasses, String>("email")
         );
 
         TableColumn availableCol = new TableColumn("available");
         availableCol.setMinWidth(300);
         availableCol.setCellValueFactory(
-                new PropertyValueFactory<Person, String>("available")
+                new PropertyValueFactory<TableClasses, String>("available")
         );
 
         table.setItems(data);
@@ -180,15 +180,15 @@ public class BalanceInterface extends Application {
             String balanceString = "" + rs.getDouble("balance");
             String availableString = "" + rs.getDouble("available");
 
-            data.add(new Person(exchangeNaam, cointag, balanceString, availableString));
+            data.add(new TableClasses(exchangeNaam, cointag, balanceString, availableString));
         }
 
     }
 
     /**
-     * Person static classes
+     * TableClasses static classes
      */
-    public static class Person {
+    public static class TableClasses {
 
         private final SimpleStringProperty exchange;
         private final SimpleStringProperty cointag;
@@ -203,7 +203,7 @@ public class BalanceInterface extends Application {
          * @param balance hoeveel balance
          * @param available beschikbare balance
          */
-        private Person(String exchange, String cointag, String balance, String available) {
+        private TableClasses(String exchange, String cointag, String balance, String available) {
             this.exchange = new SimpleStringProperty(exchange);
             this.cointag = new SimpleStringProperty(cointag);
             this.email = new SimpleStringProperty(balance);
