@@ -21,7 +21,7 @@ import mysql.MysqlServer;
 import privateRouter.BalanceSaverV2;
 import privateRouter.Deposit;
 import privateRouter.OrdersGetter;
-import privateRouter.Poloniex;
+import privateRouter.packageApi.Poloniex;
 import privateRouter.packageApi.BittrexProtocall;
 import terminal.mainTerminal;
 import updater.DatabaseUpdater;
