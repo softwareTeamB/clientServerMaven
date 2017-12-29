@@ -1,6 +1,5 @@
 package clientserver;
 
-import javafx.geometry.Insets;
 import JSON.JSONException;
 import JSON.JSONObject;
 import frameWork.ArrayListDriver;
@@ -16,17 +15,7 @@ import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
-import javafx.application.Application;
-import static javafx.application.Application.launch;
-import javafx.geometry.Pos;
-import javafx.scene.control.Label;
-import javafx.scene.Scene;
-import javafx.scene.control.TextField;
-import javafx.scene.layout.GridPane;
-import javafx.scene.text.Font;
-import javafx.scene.text.FontWeight;
-import javafx.scene.text.Text;
-import javafx.stage.Stage;
+import java.util.Stack;
 import mysql.Mysql;
 import mysql.MysqlServer;
 import privateRouter.BalanceSaverV2;
@@ -43,14 +32,14 @@ import updater.DatabaseUpdater;
  *
  * @author michel
  */
-public class ClientServer extends Application {
+public class ClientServer{
 
     /**
      * JavaDoc voor de nodejsUrl. Dit is een url om het nodejs systeem met de
      * exchange te communiseren
      */
     public static final String NODE_JS_URL = "http://127.0.0.1:9091";
-
+        
     //mysql
     public static Mysql mysql = new Mysql();
     public static MysqlServer mysqlServer = new MysqlServer();
@@ -62,7 +51,7 @@ public class ClientServer extends Application {
     public static DatabaseUpdater dataBaseUpdater;
     public static ArrayListDriver arrayListDriver;
 
-    public static Http http;
+    public static Http http = new Http();
     public static HttpPost httpPost = new HttpPost();
 
     //maak bittrex private router
@@ -95,6 +84,14 @@ public class ClientServer extends Application {
      * @param args command-line
      */
     public static void main(String[] args) {
+        
+        try {
+            config = LoadPropFile.loadPropFile("config");
+            ConsoleColor.out(config);
+        } catch (IOException ex) {
+            ConsoleColor.err(ex);
+            System.exit(0);
+        }
 
         //de nieiwe thread
         Thread thread = new Thread() {
@@ -107,26 +104,8 @@ public class ClientServer extends Application {
         ConsoleColor.out("test");
         thread.start();
 
-    }
-
-    /**
-     * Methoden om de interface op te starten
-     *
-     * @param args command-line
-     */
-    private static void interfaceMethoden(String[] args) {
-
-        //vraag het properties bestand op
-        String loadInterfaceString = config.getProperty("loadInterface");
-
-        //als het if stament true is dat de interface gestart word
-        if ("true".equals(loadInterfaceString)) {
-
-            //start de applicatie methoden op
-            launch(args);
-        } else {
-            ConsoleColor.warn("De interface wordt niet geladen");
-        }
+        //roep de interface methoden op
+        InterfaceMain.interfaceMethoden(args);
     }
 
     /**
@@ -135,19 +114,12 @@ public class ClientServer extends Application {
      * @param args command-line
      */
     private static void backgroundSystem(String[] args) {
-
-        try {
-            config = LoadPropFile.loadPropFile("config");
-            ConsoleColor.out(config);
-        } catch (IOException ex) {
-            ConsoleColor.err(ex);
-            System.exit(0);
-        }
-
+        
         //boolean 
         //maak het object aan voor de installerV2
-        //InstallerV2 iv2 = new InstallerV2();
-        //iv2.main();
+        InstallerV2 iv2 = new InstallerV2();
+        iv2.main();
+        
         // hier wodt de terminal input aangemaakt en opgestart in een apart thread
         mainTerminal i = new mainTerminal();
         Thread thread = new Thread() {
@@ -183,12 +155,10 @@ public class ClientServer extends Application {
          * null, ex); } / /* Methoden werkt
          * poloniex.cancelOrder("64081504477","USDT" ,"XRP");
          */
-        //http object
-        http = new Http();
 
         //maak alle objecten aan
         fileSystem = new FileSystem();
-        DatabaseUpdater dataBaseUpdater = new DatabaseUpdater();
+        dataBaseUpdater = new DatabaseUpdater();
         arrayListDriver = new ArrayListDriver();
 
         Deposit deposit = new Deposit();
@@ -236,9 +206,6 @@ public class ClientServer extends Application {
      * methoden die na kijkt op handelsplaats goed werkt
      */
     private static void mysqlExchangeCheck() {
-
-        //mysql object
-        Mysql mysql = new Mysql();
 
         //string array voor exchangeLijst
         String[] exchangeNaamArray = {"poloniex", "bittrex"};
@@ -388,35 +355,5 @@ public class ClientServer extends Application {
 
         //return variable
         return bittrexUrl;
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-
-        GridPane grid = new GridPane();
-        grid.setAlignment(Pos.CENTER);
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(25, 25, 25, 25));
-
-        //Welkom + Letter type
-        Text scenetitle = new Text("Welcome");
-        scenetitle.setFont(Font.font("Tahoma", FontWeight.NORMAL, 20));
-        grid.add(scenetitle, 0, 0, 2, 1);
-
-        //Username text
-        Label userNameLabel = new Label("Username:");
-        grid.add(userNameLabel, 0, 1);
-
-        //Text veld na Username
-        TextField userTextField = new TextField();
-        grid.add(userTextField, 1, 1);
-
-        primaryStage.setTitle("Corendon Bagage");
-        Scene scene = new Scene(grid, 1200, 920);
-        primaryStage.setScene(scene);
-        scene.getStylesheets().add("global/Style2.css");
-        primaryStage.show();
-
     }
 }

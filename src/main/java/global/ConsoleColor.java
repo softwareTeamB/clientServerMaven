@@ -89,6 +89,17 @@ public class ConsoleColor {
 
         System.out.println(BLUE + "[" + Datum.datum() + "] [INFO] " + RESET + bericht);
     }
+    
+    /**
+     * Methoden om een tabel uit te printen in 2 tabellen
+     * @param format formate 
+     * @param bericht bericht
+     * @param bericht2 bericht
+     */
+    public static void outTable(String format, Object bericht, Object bericht2){
+        System.out.printf(format, BLUE + "[" + Datum.datum() + "] [INFO] " + 
+                RESET + bericht,  bericht2);
+    }
 
     /**
      * Methoden om error bericht uit te printen
