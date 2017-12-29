@@ -12,7 +12,9 @@
     "contributors": [],
     "dependencies": {
         "express": "^4.16.2",
-        "install": "^0.10.1",
+        "gdax": "^0.4.2",
+        "install": "^0.10.2",
+        "npm": "^5.6.0",
         "poloniex.js": "0.0.7"
     }
 }
