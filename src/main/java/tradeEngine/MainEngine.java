@@ -7,6 +7,8 @@ import mysql.Mysql;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import clientserver.ClientServer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Deze methoden regelt alle trade die gedaan worden
@@ -102,12 +104,18 @@ public class MainEngine {
             //bereken hoeveel alles bij elkaar gaat kosten
             //double buyKost = buyRoom * prijs;
             //roep de methoden op die de order plaats en krijgt vervolgens de uuid terug
-            String uuid = setOrder(exchangeId, prijs, buyRoom, baseCoin, marktCoin, "buy");
+            String uuid;
+            try {
+                uuid = setOrder(exchangeId, prijs, buyRoom, baseCoin, marktCoin, "buy");
+            } catch (Exception ex) {
+                ConsoleColor.err(ex);
+                return;
+            }
 
             //kijk het het succesvol is gelukt
             boolean orderSetSuccesVol = succesVol(exchangeId, uuid);
             if (orderSetSuccesVol) {
-                
+
                 //zet de order in het database
                 insertUuid(exchangeId, uuid, "buy", baseCoin, marktCoin, prijs, buyRoom);
             }
@@ -137,7 +145,7 @@ public class MainEngine {
             String baseCoin,
             String marktCoin,
             String type
-    ) {
+    ) throws Exception {
 
         //String order nummer
         String orderNummer = null;
@@ -164,6 +172,8 @@ public class MainEngine {
                     ConsoleColor.warn("Het order type wordt niet herkend. Dit is de order type: " + type);
                     break;
             }
+        } else {
+            throw new Exception("Exchange is niet bekend!");
         }
 
         //return orderNummer
