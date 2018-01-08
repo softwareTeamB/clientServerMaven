@@ -8,6 +8,7 @@ import global.FileSystem;
 import global.LoadPropFile;
 import http.Http;
 import http.HttpPost;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -15,7 +16,6 @@ import java.nio.file.Paths;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Properties;
-import java.util.Stack;
 import mysql.Mysql;
 import mysql.MysqlServer;
 import privateRouter.BalanceSaverV2;
@@ -27,19 +27,17 @@ import terminal.mainTerminal;
 import updater.DatabaseUpdater;
 
 /**
- * Dit is het programma wat er voor zorgt dat de client kant up to data kan
- * blijven
+ * Dit is het programma wat er voor zorgt dat de client kant up to data kan blijven
  *
  * @author michel
  */
-public class ClientServer{
+public class ClientServer {
 
     /**
-     * JavaDoc voor de nodejsUrl. Dit is een url om het nodejs systeem met de
-     * exchange te communiseren
+     * JavaDoc voor de nodejsUrl. Dit is een url om het nodejs systeem met de exchange te communiseren
      */
     public static final String NODE_JS_URL = "http://127.0.0.1:9091";
-        
+
     //mysql
     public static Mysql mysql = new Mysql();
     public static MysqlServer mysqlServer = new MysqlServer();
@@ -47,7 +45,7 @@ public class ClientServer{
     private static String url = "127.0.0.1:7090";
     private static String versieCheck = "/versieCheck.txt";
 
-    public static FileSystem fileSystem;
+    public static FileSystem fileSystem = new FileSystem();
     public static DatabaseUpdater dataBaseUpdater;
     public static ArrayListDriver arrayListDriver;
 
@@ -77,6 +75,7 @@ public class ClientServer{
     public static JSONObject exchangeVerbindingsTeken = new JSONObject();
 
     public static Properties config;
+    public static Properties apiKeys;
 
     /**
      * De main methoden
@@ -85,8 +84,19 @@ public class ClientServer{
      */
     public static void main(String[] args) {
         
+        //constructor methoden
+        constructorMethoden();
+
         try {
             config = LoadPropFile.loadPropFile("config");
+            ConsoleColor.out(config);
+        } catch (IOException ex) {
+            ConsoleColor.err(ex);
+            System.exit(0);
+        }
+
+        try {
+            apiKeys = LoadPropFile.loadPropFile("apiKeys");
             ConsoleColor.out(config);
         } catch (IOException ex) {
             ConsoleColor.err(ex);
@@ -114,12 +124,12 @@ public class ClientServer{
      * @param args command-line
      */
     private static void backgroundSystem(String[] args) {
-        
+
         //boolean 
         //maak het object aan voor de installerV2
         InstallerV2 iv2 = new InstallerV2();
         iv2.main();
-        
+
         // hier wodt de terminal input aangemaakt en opgestart in een apart thread
         mainTerminal i = new mainTerminal();
         Thread thread = new Thread() {
@@ -134,7 +144,7 @@ public class ClientServer{
 
         //mysqlCheck
         mysqlExchangeCheck();
-        ConsoleColor.out("test");
+
         //maak de poloniex private router aan
         poloniex = new Poloniex();
 
@@ -149,15 +159,11 @@ public class ClientServer{
             Logger.getLogger(ClientServer.class.getName()).log(Level.SEVERE, null, ex);
         }*/
         /**
-         * Methoden werkt try { poloniex.setOrder("buy", "USDT", "XRP", 0.1,
-         * 100); } catch (Exception ex) {
-         * Logger.getLogger(ClientServer.class.getName()).log(Level.SEVERE,
-         * null, ex); } / /* Methoden werkt
+         * Methoden werkt try { poloniex.setOrder("buy", "USDT", "XRP", 0.1, 100); } catch (Exception ex) {
+         * Logger.getLogger(ClientServer.class.getName()).log(Level.SEVERE, null, ex); } / /* Methoden werkt
          * poloniex.cancelOrder("64081504477","USDT" ,"XRP");
          */
-
         //maak alle objecten aan
-        fileSystem = new FileSystem();
         dataBaseUpdater = new DatabaseUpdater();
         arrayListDriver = new ArrayListDriver();
 
@@ -332,6 +338,35 @@ public class ClientServer{
     }
 
     /**
+     * Constructor met alle belangrijke methoden
+     */
+    private static void constructorMethoden() {
+        
+        //folder check
+        folderCheck();
+    }
+
+    /**
+     * Folder check
+     */
+    private static void folderCheck() {
+
+        //zet folder in file
+        File directory = new File(fileSystem.getLOCATIE_FOLDER());
+
+        //if stamnet of de folder bestaat
+        if (!directory.exists()) {
+            ConsoleColor.warn("Folder bestaat niet");
+
+            directory.mkdir();
+
+            ConsoleColor.out("Folder is aangemaakt");
+        } else {
+            ConsoleColor.out("Folder bestaat");
+        }
+    }
+
+    /**
      * Methoden die de marktnaam return
      *
      * @param baseCoin basis coin
@@ -356,4 +391,5 @@ public class ClientServer{
         //return variable
         return bittrexUrl;
     }
+
 }
