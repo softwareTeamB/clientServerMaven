@@ -1,14 +1,12 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package privateRouter.packageApi;
 
-import com.loopj.android.http.Base64;
+/**
+ * Bitfinex protocall
+ *
+ * @author michel
+ */
 import android.util.Log;
 
-import JSON.JSONException;
 import JSON.JSONObject;
 import global.ConsoleColor;
 
@@ -27,11 +25,8 @@ import java.security.NoSuchAlgorithmException;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import static org.apache.commons.codec.binary.Base64.encodeBase64;
 
-/**
- *
- * @author root
- */
 public class Bitfinex {
 
     private static final String TAG = Bitfinex.class.getSimpleName();
@@ -62,57 +57,91 @@ public class Bitfinex {
     }
 
     /**
-     * Vraag de balance info op
+     * Balance
      *
-     * @return return een string met de ba;ance waarde
-     * @throws IOException file exception
-     *
-    public String v1Balances() throws IOException {
+     * @return de balance in een string
+     * @throws IOException aks er eeb eror optreed
+     */
+    public String balance() throws IOException {
 
-        //urlPath
-        String urlPath = "/balances";
+        //de paraneters die meegeven moeten worden
+        final String URL_PARAMETER = "/v1/balances";
+        final String METHOD_REQUEST = "POST";
+        
+        //maak het ojbect aan
+        JSONObject object = new JSONObject();
+        
 
-        return autthSystem(urlPath);
+        //roep de private methoden op die de request verwerkt
+        return sendRequest(URL_PARAMETER, METHOD_REQUEST, object);
     }
     
-    **
-     * Auth system
-     *
-     * @param urlPath url locatie
-     * @return return de reponse
-     * @throws IOException io exceptions
-     *
-    private String autthSystem(String urlPath) throws IOException {
+    
+    
+    
+    
+    
 
+    /**
+     * Creates an authenticated request WITHOUT request parameters. Send a request for Balances.
+     *
+     * @return Response string if request successfull
+     * @throws IOException
+     */
+    private String sendRequest(String urlPath, String methodenWeb, JSONObject payLoadObject) throws IOException {
         String sResponse;
 
         HttpURLConnection conn = null;
-        String method = "POST";
+
+        //Methoden
+        String method = null;
+
+        //switch de method goed regeld
+        switch (methodenWeb) {
+            case "get":
+            case "GET":
+                //method op get zetten
+                method = "GET";
+                break;
+
+            case "post":
+            case "POST":
+                //methoden op post zetten
+                method = "POST";
+                break;
+            default:
+                //geef een exceotion
+                throw new Error("Er is geen geldig methoden request geweest");
+        }
 
         try {
-            URL url = new URL("https://api.bitfinex.com/v1/balances");
+            URL url = new URL("https://api.bitfinex.com" + urlPath);
             conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod(method);
 
             if (isAccessPublicOnly()) {
                 String msg = "Authenticated access not possible, because key and secret was not initialized: use right constructor.";
-                Log.e(TAG, msg);
+//s                Log.e(TAG, msg);
                 return msg;
             }
 
             conn.setDoOutput(true);
             conn.setDoInput(true);
-
-            JSONObject jo = new JSONObject();
-            jo.put("request", urlPath);
-            jo.put("nonce", Long.toString(getNonce()));
+            
+            //vul het object aan
+            payLoadObject.put("request", urlPath);
+            payLoadObject.put("nonce", Long.toString(getNonce()));
 
             // API v1
-            String payload = jo.toString();
+            String payload = payLoadObject.toString();
 
             // this is usage for Base64 Implementation in Android. For pure java you can use java.util.Base64.Encoder
             // Base64.NO_WRAP: Base64-string have to be as one line string
-            String payload_base64 = Base64.encodeToString(payload.getBytes(), Base64.NO_WRAP);
+            //  String payload_base64 = Base64.encodeToString(payload.getBytes());
+            byte[] bytesEncoded = encodeBase64(payload.getBytes());
+
+            //payload base 64
+            String payload_base64 = new String(bytesEncoded);
 
             String payload_sha384hmac = hmacDigest(payload_base64, apiKeySecret, ALGORITHM_HMACSHA384);
 
@@ -138,7 +167,7 @@ public class Bitfinex {
                 try {
                     sResponse = convertStreamToString(conn.getErrorStream());
                     errMsg += " -> " + sResponse;
-                    Log.e(TAG, errMsg, e);
+//                    Log.e(TAG, errMsg, e);
                     return sResponse;
                 } catch (IOException e1) {
                     errMsg += " Error on reading error-stream. -> " + e1.getLocalizedMessage();
@@ -148,9 +177,6 @@ public class Bitfinex {
             } else {
                 throw new IOException(e.getClass().getName(), e);
             }
-        } catch (JSONException e) {
-            String msg = "Error on setting up the connection to server";
-            throw new IOException(msg, e);
         } finally {
             if (conn != null) {
                 conn.disconnect();
@@ -158,140 +184,13 @@ public class Bitfinex {
         }
     }
 
-    private String convertStreamToString(InputStream is) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(is));
-        StringBuilder sb = new StringBuilder();
-
-        String line;
-        try {
-            while ((line = reader.readLine()) != null) {
-                sb.append(line).append('\n');
-            }
-        } finally {
-            try {
-                is.close();
-            } catch (IOException e) {
-                ConsoleColor.err(e);
-            }
-        }
-        return sb.toString();
-    }
-
-    public long getNonce() {
-        return ++nonce;
-    }
-
-    public boolean isAccessPublicOnly() {
-        return apiKey == null;
-    }
-
-    public static String hmacDigest(String msg, String keyString, String algo) {
-        String digest = null;
-        try {
-            SecretKeySpec key = new SecretKeySpec((keyString).getBytes("UTF-8"), algo);
-            Mac mac = Mac.getInstance(algo);
-            mac.init(key);
-
-            byte[] bytes = mac.doFinal(msg.getBytes("ASCII"));
-
-            StringBuffer hash = new StringBuffer();
-            for (int i = 0; i < bytes.length; i++) {
-                String hex = Integer.toHexString(0xFF & bytes[i]);
-                if (hex.length() == 1) {
-                    hash.append('0');
-                }
-                hash.append(hex);
-            }
-            digest = hash.toString();
-        } catch (UnsupportedEncodingException e) {
-            Log.e(TAG, "Exception: " + e.getMessage());
-        } catch (InvalidKeyException e) {
-            Log.e(TAG, "Exception: " + e.getMessage());
-        } catch (NoSuchAlgorithmException e) {
-            Log.e(TAG, "Exception: " + e.getMessage());
-        }
-        return digest;
-    }*/
-    
-     public String sendRequestV1Balances() throws IOException {
-        String sResponse;
-
-        HttpURLConnection conn = null;
-
-        String urlPath = "/v1/balances";
-        // String method = "GET";
-        String method = "POST";
-
-        try {
-            URL url = new URL("https://api.bitfinex.com" + urlPath);
-            conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod(method);
-
-            if (isAccessPublicOnly()) {
-                String msg = "Authenticated access not possible, because key and secret was not initialized: use right constructor.";
-                Log.e(TAG, msg);
-                return msg;
-            }
-
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
-
-            JSONObject jo = new JSONObject();
-            jo.put("request", urlPath);
-            jo.put("nonce", Long.toString(getNonce()));
-
-            // API v1
-            String payload = jo.toString();
-
-			// this is usage for Base64 Implementation in Android. For pure java you can use java.util.Base64.Encoder
-          // Base64.NO_WRAP: Base64-string have to be as one line string
-            String payload_base64 = Base64.encodeToString(payload.getBytes(), Base64.NO_WRAP);
-
-			
-            String payload_sha384hmac = hmacDigest(payload_base64, apiKeySecret, ALGORITHM_HMACSHA384);
-
-           conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestProperty("Accept", "application/json");
-            conn.addRequestProperty("X-BFX-APIKEY", apiKey);
-            conn.addRequestProperty("X-BFX-PAYLOAD", payload_base64);
-            conn.addRequestProperty("X-BFX-SIGNATURE", payload_sha384hmac);
-
-            // read the response
-            InputStream in = new BufferedInputStream(conn.getInputStream());
-            return convertStreamToString(in);
-
-        } catch (MalformedURLException e) {
-            throw new IOException(e.getClass().getName(), e);
-        } catch (ProtocolException e) {
-            throw new IOException(e.getClass().getName(), e);
-        } catch (IOException e) {
-
-            String errMsg = e.getLocalizedMessage();
-
-            if (conn != null) {
-                try {
-                    sResponse = convertStreamToString(conn.getErrorStream());
-                    errMsg += " -> " + sResponse;
-                    Log.e(TAG, errMsg, e);
-                    return sResponse;
-                } catch (IOException e1) {
-                    errMsg += " Error on reading error-stream. -> " + e1.getLocalizedMessage();
-                    Log.e(TAG, errMsg, e);
-                    throw new IOException(e.getClass().getName(), e1);
-                }
-            } else {
-                throw new IOException(e.getClass().getName(), e);
-            }
-        } catch (JSONException e) {
-            String msg = "Error on setting up the connection to server";
-            throw new IOException(msg, e);
-        } finally {
-            if (conn != null) {
-                conn.disconnect();
-            }
-        }
-    }
-
+    /**
+     * Convert response to string
+     *
+     * @param is input
+     * @return string met de response van bitfinex
+     * @throws IOException aks er eeb error optreed
+     */
     private String convertStreamToString(InputStream is) throws IOException {
         BufferedReader reader = new BufferedReader(new InputStreamReader(is));
         StringBuilder sb = new StringBuilder();
@@ -346,5 +245,4 @@ public class Bitfinex {
         }
         return digest;
     }
-
 }
