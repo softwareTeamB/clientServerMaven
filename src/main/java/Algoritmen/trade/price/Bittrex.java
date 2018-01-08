@@ -49,7 +49,7 @@ public class Bittrex extends MainPriceMethoden {
     protected void mainMethoden() throws Exception {
 
         //kijk of de markt goed is
-        if ("buy" != MARKT_TYPE || "sell" != MARKT_TYPE) {
+        if (!"buy".equals(MARKT_TYPE) || !"sell".equals(MARKT_TYPE)) {
             throw new Exception("De markt type is niet bekend. Dit is het mark type: " + MARKT_TYPE);
         }
 
@@ -144,4 +144,15 @@ public class Bittrex extends MainPriceMethoden {
         //return de default prijs
         return PRIJS;
     }
+
+    /**
+     * To string methoden
+     * @return return de beste prijs
+     */
+    @Override
+    public String toString() {
+        return "" + BestPrijs;
+    }
+    
+    
 }
