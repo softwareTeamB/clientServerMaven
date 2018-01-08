@@ -25,7 +25,7 @@ public class LoadPropFile {
         InputStream input;
 
         try {
-            input = new FileInputStream("./config/"+fileName+".properties");
+            input = new FileInputStream(clientserver.ClientServer.fileSystem.getLOCATIE_FOLDER() + "/config/"+fileName+".properties");
         } catch (FileNotFoundException ex) {
             System.err.println(ex);
 

@@ -8,6 +8,8 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
+
+
 /**
  * Waar alles wat met io te maken heeft
  *
@@ -15,7 +17,18 @@ import java.nio.file.Paths;
  */
 public class FileSystem {
 
-    private final String LOCATIE_FOLDER = "config/";
+    private final String LOCATIE_FOLDER;
+    
+    
+
+    /**
+     * Constructor
+     */
+    public FileSystem() {
+
+        //inserlate variable
+        this.LOCATIE_FOLDER = System.getProperty("user.home") + "/Desktop/tradeBot";
+    }
 
     /**
      * Read het bestand
@@ -43,4 +56,14 @@ public class FileSystem {
         writer.println(data);
         writer.close();
     }
+
+    /**
+     * Getter folder locatie
+     *
+     * @return fileLocation
+     */
+    public String getLOCATIE_FOLDER() {
+        return LOCATIE_FOLDER;
+    }
+
 }
