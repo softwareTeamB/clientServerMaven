@@ -3,6 +3,7 @@ package clientserver;
 import static clientserver.ClientServer.config;
 import global.ConsoleColor;
 import interfacePackage.BalanceInterface;
+import interfacePackage.Home;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
@@ -25,22 +26,17 @@ import javafx.stage.Stage;
  * @author michel
  */
 public class InterfaceMain extends Application {
+    
 
-    /**
-     * Naam van het css file
-     */
+    // Naam van het css file
     private static String cssNaam = "global2.css";
 
-    /**
-     * Of fullscreen enable is of niet
-     */
-    private static boolean fullScreen = true;
+    //Of fullscreen enable is of niet
+    private static boolean fullScreen = false;
 
     private static final String TITLE = "bitfarmer";
 
-    /**
-     * Assen van het window
-     */
+    //Assen van het window
     private static int xAs = 1200;
     private static int yAs = 920;
 
@@ -97,9 +93,9 @@ public class InterfaceMain extends Application {
         btn.setOnAction((ActionEvent e) -> {
 
             //roep de methoden op die de order pagina laat
-            BalanceInterface op = new BalanceInterface();
-            op.start(primaryStage);
-
+            Home home = new Home();
+            home.start(primaryStage);
+            
         });
 
         primaryStage.setTitle("Corendon Bagage");
