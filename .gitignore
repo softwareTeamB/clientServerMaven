@@ -17,6 +17,7 @@
 *.zip
 *.tar.gz
 *.rar
+*.javascript
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
@@ -25,5 +26,6 @@ target/
 config/
 *.properties
 /NodeJsApplication/node_modules/
+/NodeJsApplication/config.json
 /nbproject/
 *.class

@@ -1,4 +1,4 @@
-package privateRouter;
+package privateRouter.packageApi;
 
 /**
  * Hier in staat belangrijke methoden die de communicatie moeten regelen met de exchange

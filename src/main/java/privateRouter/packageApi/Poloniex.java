@@ -1,9 +1,10 @@
-package privateRouter;
+package privateRouter.packageApi;
 
 import JSON.JSONArray;
 import JSON.JSONObject;
 import global.ConsoleColor;
 import http.Http;
+import privateRouter.mainPrivateRouter;
 
 /**
  * Klassie die alle public en private actie kan aansturen
