@@ -61,6 +61,7 @@ public class MainEngine {
 
         //vraag alle order settings op
         String getOrderSettingBuy = "SELECT * FROM vieuwopenordersettingbuy WHERE exchangeId=" + exchangeId;
+        ConsoleColor.out(getOrderSettingBuy);
         ResultSet rs3 = mysql.mysqlSelect(getOrderSettingBuy);
         while (rs3.next()) {
 
@@ -227,6 +228,7 @@ public class MainEngine {
 
         //vraag de available balanec op van baseCoin
         double availableBaseCoin = balanceData.getJSONArray(baseCoin).getDouble(1);
+        ConsoleColor.out(availableBaseCoin);
 
         //vraag de balance data op van marktCoin
         double balanceMarktCoin = balanceData.getJSONArray(marktCoin).getDouble(0);
@@ -234,8 +236,6 @@ public class MainEngine {
         //bereken de hoeveelheid wat kan worden aangeschaft
         //doet dit door de beschikbare balance te delen door de prijs
         double totaalBuyAvailable = availableBaseCoin / prijs;
-
-        ConsoleColor.warn("test " + totaalBuyAvailable * prijs);
 
         //kijk of totaalBuyAvailable groter is dan maxBuy
         if (maxBuy < totaalBuyAvailable) {
@@ -385,7 +385,7 @@ public class MainEngine {
 
                 //er is een probleem. Print de error uit
                 ConsoleColor.err("Er is een probleem bij order te plaatsen. Het probleem doet zich voor bij bittrex. "
-                        + "Dit is de error: " + object.getString("message"));
+                        + "Dit is de error: " + object.getString("message") +"\n"+object);
 
                 //return dat het mislukt is
                 return false;

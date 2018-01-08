@@ -2,7 +2,8 @@ package clientserver;
 
 import static clientserver.ClientServer.config;
 import global.ConsoleColor;
-import interfacePackage.OrderBook;
+import interfacePackage.BalanceInterface;
+import interfacePackage.Home;
 import javafx.application.Application;
 import static javafx.application.Application.launch;
 import javafx.event.ActionEvent;
@@ -25,20 +26,17 @@ import javafx.stage.Stage;
  * @author michel
  */
 public class InterfaceMain extends Application {
+    
 
-    /**
-     * Naam van het css file
-     */
-    public static String cssNaam = "global2.css";
+    // Naam van het css file
+    private static String cssNaam = "global2.css";
 
-    /**
-     * Of fullscreen enable is of niet
-     */
-    public static boolean fullScreen = false;
+    //Of fullscreen enable is of niet
+    private static boolean fullScreen = false;
 
-    /**
-     * Assen van het window
-     */
+    private static final String TITLE = "bitfarmer";
+
+    //Assen van het window
     private static int xAs = 1200;
     private static int yAs = 920;
 
@@ -95,38 +93,65 @@ public class InterfaceMain extends Application {
         btn.setOnAction((ActionEvent e) -> {
 
             //roep de methoden op die de order pagina laat
-            OrderBook op = new OrderBook();
-            op.start(primaryStage);
-
+            Home home = new Home();
+            home.start(primaryStage);
+            
         });
 
         primaryStage.setTitle("Corendon Bagage");
         Scene scene = new Scene(grid, 1200, 920);
         primaryStage.setScene(scene);
-        
+
         //full screen modus
         primaryStage.setFullScreen(fullScreen);
-        
+
         //css load
         scene.getStylesheets().add(cssNaam);
         primaryStage.show();
     }
-    
+
     /**
      * Methoden die een getter maakt voor de x as
+     *
      * @return de x as
      */
-    public static int getXas(){
+    public static int getXas() {
         return xAs;
+    }
+
+    /**
+     * Methoden die een getter is voor de y as
+     *
+     * @return
+     */
+    public static int getYas() {
+        return yAs;
+    }
+
+    /**
+     * Getter voor title in javafx
+     *
+     * @return de title
+     */
+    public static String getTitle() {
+        return TITLE;
+    }
+
+    /**
+     * Getter methoden voor css
+     *
+     * @return return css locatie
+     */
+    public static String getCss() {
+        return cssNaam;
     }
     
     /**
-     * Methoden die een getter is voor de y as
-     * @return 
+     * Getter voor full screen mode
+     * @return of javafx in fullscreen moet of neit
      */
-    public static int getYas(){
-        return yAs;
+    public static boolean getFullScreen(){
+        return fullScreen;
     }
-    
 
 }

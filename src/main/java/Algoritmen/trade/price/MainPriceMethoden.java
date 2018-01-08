@@ -1,5 +1,7 @@
 package Algoritmen.trade.price;
 
+import JSON.JSONObject;
+
 /**
  * Methoden wat een extends moet zijn
  *
@@ -23,11 +25,53 @@ public abstract class MainPriceMethoden {
      * @param prijsRate de prijs
      * @return de nieuwe prijs
      */
-    public double calcUsdtPrijs(double prijsRate) {
+    public double calcBuyUsdtPrijs(double prijsRate) {
 
-        return prijsRate + 0.02;
+        return prijsRate + 0.01;
 
     }
 
-    protected abstract void subCalcMethoden();
+    /**
+     * main methoden
+     *
+     * @return de prijs
+     * @throws java.lang.Exception als er een error is
+     */
+    protected abstract void mainMethoden() throws Exception;
+
+    /**
+     * Methoden om de beste buy prijs uit te rekenen
+     *
+     * @param objectResult object van de exchange
+     * @return de prijs
+     */
+    protected abstract double calcBuyPrijs(JSONObject objectResult) ;
+
+    /**
+     * Methoden op de beste sell Prijs uit te rekenen
+     *
+     * @param objectResult object van de exchange
+     * @return de prijs
+     */
+    protected abstract double calcSellPrijs(JSONObject objectResult);
+
+    /**
+     * Methoden om de buy prijs uit te rekenen
+     *
+     * @param prijs de prijs
+     * @return de nieuwe buy prijs
+     */
+    public double buyPrijs(double prijs) {
+        return prijs + 0.00000001;
+    }
+
+    /**
+     * Methoden om de buy prijs uit te rekenen
+     *
+     * @param prijs de prijs
+     * @return de nieuwe sell prijs
+     */
+    public double sellPrijs(double prijs) {
+        return prijs - 0.00000001;
+    }
 }

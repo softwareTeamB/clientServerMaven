@@ -93,6 +93,8 @@ public class BalanceSaverV2 {
 
         //maak er een jsonObject van
         JSONObject bittrexReponseObject = new JSONObject(bittrexReponse);
+        
+        ConsoleColor.out(bittrexReponse);
 
         //kijk of de reponse geldig is
         if (!ErrorMessageResponse.bittrexCheck(bittrexReponseObject)) {
@@ -113,7 +115,14 @@ public class BalanceSaverV2 {
             double balance = object.getDouble("Balance");
             double available = object.getDouble("Available");
             double pending = object.getDouble("Pending");
-
+            
+            ConsoleColor.out(cointag);
+            
+            if("BTC".equals(cointag)){
+                ConsoleColor.out("test");
+            }
+            
+            
             try {
                 //roep de methoden op die er voor zorgt dat alles goed verwerkt wordt
                 balanceChecker(ID_BITTREX, cointag, balance, pending, available);
@@ -259,7 +268,7 @@ public class BalanceSaverV2 {
 
                 //roep de insert methoden op
                 insertBalance(exchangeID, cointag, balance, pending, available);
-            } else if (count == 1) {
+            } else if (count2 == 1) {
 
                 //termianl bericht
                 ConsoleColor.out("Balance data moet geupdate worden van coin: " + cointag + ".");
@@ -286,9 +295,10 @@ public class BalanceSaverV2 {
         String sqlUpdater = "UPDATE balance SET "
                 + "balance=" + balance + ", pending=" + pending + ", available=" + available
                 + " WHERE idExchangeLijst=" + exchangeID + " AND cointag='" + cointag + "'";
+        ConsoleColor.out(sqlUpdater);
 
         mysql.mysqlExecute(sqlUpdater);
-        ConsoleColor.out("De balance van cointag " + cointag + " is toegevoegd.");
+        ConsoleColor.out("De balance van cointag " + cointag + " is geupdated.");
     }
 
     /**
